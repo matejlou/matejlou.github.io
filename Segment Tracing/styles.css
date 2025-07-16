@@ -1,0 +1,23 @@
+body {
+  background-color: rgb(16, 16, 16); 
+  color: rgb(215, 215, 215);
+  font-family: verdana;
+  max-width: 800px;
+  padding: 32px;
+  margin: auto;
+}
+
+pre {
+    tab-size: 2;
+}
+
+code {
+    margin-left: 32px;
+    margin-right: 32px;
+}
+
+img, video {
+    display: block;
+    max-height: 512px;
+    margin: auto;
+}
