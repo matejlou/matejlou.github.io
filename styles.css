@@ -1,10 +1,25 @@
 body {
-  background-color: rgb(16, 16, 16); 
-  color: rgb(215, 215, 215);
+  background-color: rgb(22, 20, 23); 
+  color: rgb(241, 241, 234);
   font-family: verdana;
   max-width: 800px;
   padding: 32px;
   margin: auto;
+}
+
+a:link, a:visited {
+  color: rgb(233, 115, 52);
+  text-decoration: none;
+}
+
+a:hover {
+  color: rgb(255, 177, 52);
+  text-decoration: none;
+}
+
+a:active {
+  color: rgb(255, 94, 0);
+  text-decoration: none;
 }
 
 pre {
