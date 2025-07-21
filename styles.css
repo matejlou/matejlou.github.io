@@ -1,9 +1,13 @@
+:root {
+  color-scheme: light;
+}
+
 body {
-  background-color: rgb(22, 20, 23); 
-  color: rgb(241, 241, 234);
+  background-color: light-dark(rgb(22, 20, 23), rgb(241, 241, 234));
+  color: light-dark( rgb(241, 241, 234), rgb(22, 20, 23)); 
   font-family: verdana;
   max-width: 800px;
-  padding: 32px;
+  padding: 16px;
   margin: auto;
 }
 
@@ -26,13 +30,36 @@ pre {
     tab-size: 2;
 }
 
+details {
+    padding: 8px;
+    margin-left: 16px;
+    margin-right: 16px;
+    border-width: 1px;
+    border-style: solid;
+    border-radius: 5px;
+    border-color: rgb(132, 125, 138);
+    background-color: light-dark(rgb(41, 37, 43), rgb(217, 217, 209));
+}
+
+details[open] summary {
+  margin-bottom: 0.5em;
+}
+
 code {
-    margin-left: 32px;
-    margin-right: 32px;
+    margin-left: 16px;
+    margin-right: 16px;
 }
 
 img, video {
     display: block;
     max-height: 512px;
     margin: auto;
+    filter: invert(1);
+}
+
+figcaption {
+    font-size: 14px;
+    font-style: italic;
+    padding: 4px;
+    text-align: center;
 }

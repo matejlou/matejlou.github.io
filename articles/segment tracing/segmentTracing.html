@@ -4,7 +4,7 @@
     <head>
         <title> Site Name. </title>
         <link rel="stylesheet" href="../../styles.css">
-        <link rel="stylesheet" href="../../resources/dark.min.css">
+        <link rel="stylesheet" href="../../resources/highlight.css">
         <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
         <script src="../../resources/highlight.min.js"></script>
         <script src="../../resources/hlsl.min.js"
@@ -30,19 +30,23 @@
         </h2>
 
         <p>
-            An <a href="https://en.wikipedia.org/wiki/Implicit_surface">implicit surface</a> is any surface that can be expressed as a function in the form \(F(x) = 0\), also known as an <a href="https://en.wikipedia.org/wiki/Implicit_function">implicit function</a>. A very simple example of an implicit surface in 2D is \(x^2 + y^2 - r^2 = 0\). If you were to work out all possible values of \(x^2 + y^2 - r^2\) for every \((x, y)\) in space and only highlight the points that give \(0\), you would get a circle of radius \(r\).
+            An <a href="https://en.wikipedia.org/wiki/Implicit_surface">implicit surface</a> is any surface that can be expressed as an <a href="https://en.wikipedia.org/wiki/Implicit_function">implicit function</a> in the form \(F(\vec{p}) = 0\), where \(\vec{p}\) is a vector representing a point in space. A very simple example of an implicit surface in 2D is \(x^2 + y^2 - r^2 = 0\). If you were to work out all possible values of \(x^2 + y^2 - r^2\) for every \(\vec{p} = (x, y)\) in space and only highlight the points that give 0, you would get a circle of radius \(r\).
         </p>
 
         <p>
-            Metaballs in their most basic form are a type of implicit surface. Each distinct metaball \(i\) is defined by a function \(f_i(x)\). By summing up all of these functions we produce the smooth, 'blobby' surface that is characteristic of metaballs. The surface is simply the 0-level set of this sum. Often we include a bias parameter \(T\) that gives us some control over the extent of the surface.
+            <img src="images/fig_implicitSurface.png" alt="Metaballs.">
         </p>
 
         <p>
-            $$ F(x) = \sum_{i} f_i(x) - T = 0 $$
+            Metaballs are a type of implicit surface. Each distinct metaball \(i\) is defined by an implicit function \(F_i(\vec{p})\). By summing up all of these functions and taking the set of points that equals 0 we produce the smooth, 'blobby' surface that is characteristic of metaballs. Often we include a bias parameter \(T\) that gives us some control over the extent of the surface:
         </p>
 
         <p>
-            Now to actually render these surfaces in 3D we need to figure out whether or not a given pixel's view ray intersects with this surface. We parameterise a point \(p\) along the ray in terms of the ray origin \(r_o\), the ray direction \(r_d\), and the distance \(t\) along the ray:
+            $$ F(\vec{p}) = \sum_{i} F_i(\vec{p}) - T = 0 $$
+        </p>
+
+        <p>
+            Now to actually render these surfaces in 3D we need to figure out whether or not a given pixel's view ray intersects with this surface. We parameterise a point \(\vec{p}\) along the ray in terms of the ray origin \(r_o\), the ray direction \(r_d\), and the distance \(t\) along the ray:
         </p>
 
         <p>
@@ -50,7 +54,7 @@
         </p>
 
         <p>
-            Then we just plug \(\delta(t)\) into the implicit function \(F(x)\) representing our metaballs and solve for the case where this equals 0, i.e. solve for the <a href="https://en.wikipedia.org/wiki/Zero_of_a_function">root</a>.
+            Plugging \(\delta(t)\) into the function \(F(\vec{p})\) gives us a one-dimensional function with respect to the ray parameter \(t\). The surface is found at the points where this function is equal to 0, in other words it corresponds to the function's <a href="https://en.wikipedia.org/wiki/Zero_of_a_function">roots</a>.
         </p>
 
         <p>
@@ -58,11 +62,14 @@
         </p>
 
         <p>
-            <img src="images/fig_metaballs.png" alt="Metaballs.">
+            <figure>
+                <img src="images/fig_metaballs.png" alt="Metaballs.">
+                <figcaption>Three metaballs as an implicit function and their representation along a ray as a 1D line.</figcaption>
+            </figure>
         </p>
 
         <p>
-            Of course if it were really that simple I'd end this post right here. Unfortunately this equation is impossible to solve analytically for anything but the simplest functions, much simpler than what we can make use with. We have to find the solution numerically, by taking a bunch of educated guesses until we converge to the answer. This brings us to the next section.
+            Of course if it were really that simple I'd end this post right here. Unfortunately this equation is impossible to solve analytically for anything but the simplest functions, much simpler than what we can make use with. We have to find the solution numerically, by taking a bunch of educated guesses until we converge to the answer.
         </p>
 
         <h2>
@@ -70,15 +77,15 @@
         </h2>
 
         <p>
-            Ray marching is simply the process of repeatedly evaluating the implicit surface at \(\mathbf{\delta}(t)\) for increasing values of \(t\) until we hit the surface, that is when \(F \circ \mathbf{\delta}(t) = 0\). The simplest way to do this is to march along the ray in fixed-length increments.
+            Ray marching is the process of repeatedly evaluating \(F \circ \delta(t)\) for increasing values of \(t\) until we hit the surface. The simplest way to do this is to march along the ray in fixed-length increments. Larger steps require less work but risk skipping over parts of the surface and producing incorrect results, while smaller steps provide more accuracy at the cost of more work.
         </p>
 
         <p>
-            There is a clear tradeoff between the step size and the computational work needed to evaluate the surface. Larger steps require less work but risk skipping over parts of the surface and producing incorrect results, while smaller steps provide more accuracy at the cost of more work. To compensate for this, people have come up with clever ways to vary the step size adaptively.
+            FIGURE.
         </p>
 
         <p>
-            It would help if we had some sort of guaranteed lower bound on how large a step we can take along the ray without hitting the surface. This is where we can make use the property of <a href="https://en.wikipedia.org/wiki/Lipschitz_continuity">Lipschitz continuity</a>. The Lipschitz constant of a function \(f(x)\) is the smallest value \(\lambda\) that satisfies the following inequality for any two points \(a\) and \(b\):
+            Often we can analyse the function to get a better idea of how large a step we can take without overshooting the surface. This is where we can make use the property of <a href="https://en.wikipedia.org/wiki/Lipschitz_continuity">Lipschitz continuity</a>. The Lipschitz constant of a function \(f(x)\) is the smallest value \(\lambda\) that satisfies the following inequality for any two points \(a\) and \(b\):
         </p>
 
         <p>
@@ -86,11 +93,15 @@
         </p>
 
         <p>
-            This says that the absolute difference between the values at \(f(a)\) and \(f(b)\) is never greater than the distance between \(a\) and \(b\) times \(\lambda\). A nice way to visualise this is to imagine placing a double cone over the graph of \(f(x)\) with the origin anywhere on the line, such that the entire function is always contained within the cone. The slopes of the two lines forming the double cone are given by \(\pm\lambda\).
+            This says that the distance between the points at \(f(a)\) and \(f(b)\) is never greater than the distance between \(a\) and \(b\) times \(\lambda\). A nice way to visualise this is to imagine placing a double cone over the graph of \(f(x)\) with the origin anywhere on the line, such that the entire function is always contained within the cone. The slopes of the two lines forming the double cone are given by \(\pm\lambda\).
         </p>
 
         <p>
-            We can relate the Lipschitz constant of a function to its derivative. The Lipschitz constant is equal to the largest absolute value of its first derivative:
+            FIGURE.
+        </p>
+
+        <p>
+            The Lipschitz constant of a function coincides with the value of its steepest <a href="https://en.wikipedia.org/wiki/Slope">slope</a>, or more formally the maximum absolute value of its first derivative:
         </p>
 
         <p>
@@ -98,15 +109,7 @@
         </p>
 
         <p>
-            In other words it is equal to the steepest slope of the function. If we think back to the double cone this should make intuitive sense. The only way to ensure that the function is contained within the cone at all times is to make sure the angle of the cone is no smaller than the steepest part of the function.
-        </p>
-
-        <p>
-            We can use the Lipschitz constant of a function to get a better estimate of how far we can step along a ray without hitting the surface. Recall that an intersection with the surface is given when \(f(x) = 0\), corresponding to the <a href="https://en.wikipedia.org/wiki/Zero_of_a_function">roots</a> of the function.
-        </p>
-
-        <p>
-            Let \(t\) be the any point on the line and \(x_0\) be any root of \(f(x)\) so that \(f (x_0) = 0\). We can then write out equation (\(\ref{lipschitz}\)) as:
+            This gives us a guarantee on the largest step we can take without overshooting the surface. Moving forward we define \(f(t) = F \circ \delta(t)\). Let \(x_0\) be any root of \(f(t)\) such that \(f (x_0) = 0\), corresponding to the surface. We can then write out equation (\(\ref{lipschitz}\)) as:
         </p>
 
         <p>
@@ -122,11 +125,24 @@
         </p>
 
         <p>
-            So \(\dfrac{f(t)}{\lambda}\) will always give us a value whose magnitude is guaranteed to be less than the minimum distance to the surface. We can apply this to the ray marching algorithm to determine a more optimal step size every time we evaluate the function along the ray.
+            In other words the absolute value of \(\dfrac{f(t)}{\lambda}\) will give us a step size that is always less than or equal to the distance to the surface. Evaluating this value at every step along the ray can accelerate ray marching considerably.
+        </p>
+
+        <details>
+            <summary>
+                Lipschitz Constant of an SDF
+            </summary>
+            <div>
+                Note that a <a href="https://en.wikipedia.org/wiki/Signed_distance_function">signed distance function</a> is a special case of an implicit function where the Lipschitz constant is 1, assuming a Euclidean <a href="https://en.wikipedia.org/wiki/Metric_space">metric space</a>. This property makes SDFs extremely convenient for use with ray marching.
+            </div>
+        </details>
+
+        <p>
+            For a sum of functions like our metaballs equation, we can add the Lipschitz constants of each individual function to get an upper bound on the constant.
         </p>
 
         <p>
-            However this may still require many steps before we converge at a solution. This method is also notorious for performing badly at grazing angles to the surface, where the number of steps can increase significantly.
+            $$ \lambda_a + \lambda_b \ge \lambda_{a + b} $$
         </p>
 
         <h2>
@@ -134,7 +150,7 @@
         </h2>
 
         <p>
-            An inclusion function is defined as any set of points that is known to contain every possible value of a given function. The idea of the enclosing cone from the previous section can be thought of as a type of inclusion function for our implicit surface. For a given point \(t\) along the ray, the equations \(f^{+}\) and \(f^{-}\) describing the upper and lower bounding lines are:
+            Using the Lipschitz constant to get a conservative step size is equivalent to finding the intersection between the ray and the enclosing cone mentioned earlier. For a point \(t\) along the ray, the two lines that make up the cone can be described by a pair of equations \(f^{+}\) and \(f^{-}\):
         </p>
 
         <p>
@@ -142,7 +158,7 @@
         </p>
 
         <p>
-            Where \(f^{-}(x) \le f(x) \le f^{+}(x)\). Since these lines bound the surface, any point on the line is necessarily either outside or just touching the surface. It follows then that the intersection of either of these lines with the ray will also be on or outside the surface. We find this intersection by setting \(f^{+}\) or \(f^{-}\) equal to \(0\) and solving for the root:
+            These are sometimes referred to as <i>inclusion functions</i> of \(f(t)\).  The intersection is found by setting either \(f^{+}\) or \(f^{-}\) equal to \(0\) and solving for the root:
         </p>
 
         <p>
@@ -150,7 +166,7 @@
         </p>
 
         <p>
-            Notice how that familiar term \(\dfrac{f(t)}{\lambda}\) appears again, and just as before it indicates the step size along the ray from \(t\) guaranteed not to pass through the surface. We've shown that both approaches are basically equivalent, but this approach implies that we can do this for any inclusion function as long as its roots can be analytically determined. For example, we can define an oblique bounding cone where the slopes of both lines are different. Let \(\lambda^{+}\) and \(\lambda^{-}\) be the maximum and minimum values of the derivative of \(f(x)\), respectively. Then an asymmetric inclusion function can be described as:
+            Yielding the familiar term \(\dfrac{f(t)}{\lambda}\) corresponding to the step size. Looking at the problem this way suggests that we can do this for other types of inclusion functions as well. For example, we can define an asymmetric bounding cone where the upper and lower lines have different slopes. Let \(\lambda^{+}\) and \(\lambda^{-}\) be the maximum and minimum values of the derivative of \(f(t)\), respectively. Then:
         </p>
 
         <p>
@@ -162,29 +178,25 @@
         </p>
 
         <p>
-            $$ \begin{aligned} \lambda^{+} = \max(f'(x)) \\ \lambda^{-} = \min(f'(x)) \end{aligned} $$
+            $$ \begin{aligned} \lambda^{+} = \max(f'(t)) \\ \lambda^{-} = \min(f'(t)) \end{aligned} $$
         </p>
 
         <p>
-            The extra specificity in some cases gives us an even better idea of how far along the ray we can safely step. Notice also how the equations for the bounding lines closely resemble a truncated <a href="https://en.wikipedia.org/wiki/Taylor_series">Taylor series</a> with \(n = 2\) terms. So we might also interpret this as substituting our implicit function with a locally approximate function whose roots are easier to find. For this reason you'll sometimes see this referred to as a Taylor inclusion function. 
+            Often this gives us an even better idea of how far along the ray we can safely step. But we don't need to limit ourselves to straight lines. Replacing our bounding lines with bounding parabolas gives us an even tighter inclusion function whose roots are still relatively simple to solve for. If we let \(\gamma^{\pm}\) be the minimum and maximum values of the <i>second</i> derivative of \(f(t)\) then:
         </p>
 
         <p>
-            This then begs the question, can we use a higher-order Taylor approximation to get an even better bound on the maximum step size? It turns out that yes, we can. If we  use a second-order Taylor approximation then our bounding lines become bounding parabolas and the inclusion function becomes even tighter. All we need to do is redefine \(\pm \lambda\) to be the minimum and maximum values of the <i>second</i> derivative of \(f(x)\) instead. Then:
-        </p>
-
-        <p>
-            $$ \begin{aligned} f^{+}(x) &= f(t) + f'(t)(x - t) + \dfrac{\lambda^{+} (x - t)^2}{2} \\ f^{-}(x) &= f(t) + f'(t)(x - t) + \dfrac{\lambda^{-} (x - t)^2}{2} \end{aligned} $$
+            $$ \begin{aligned} f^{+}(x) &= f(t) + f'(t)(x - t) + \dfrac{\gamma^{+} (x - t)^2}{2} \\ f^{-}(x) &= f(t) + f'(t)(x - t) + \dfrac{\gamma^{-} (x - t)^2}{2} \end{aligned} $$
         </p>
 
         Where:
 
         <p>
-            $$ \begin{aligned} \lambda^{+} = \max(f''(x)) \\ \lambda^{-} = \min(f''(x)) \end{aligned} $$
+            $$ \begin{aligned} \gamma^{+} = \max(f''(t)) \\ \gamma^{-} = \min(f''(t)) \end{aligned} $$
         </p>
 
         <p>
-            Now finding the roots at \(f^{\pm}(x) = 0\) involves solving a quadratic equation, which we can do using the good old <a href="https://en.wikipedia.org/wiki/Quadratic_formula">quadratic formula.</a> The roots of the bounding lines can be expressed like so:
+            Now finding the roots at \(f^{\pm}(x) = 0\) involves solving a quadratic equation, which we can do using the <a href="https://en.wikipedia.org/wiki/Quadratic_formula">quadratic formula.</a> The roots of the bounding lines can be expressed like so:
         </p>
 
         <p>
@@ -200,7 +212,7 @@
         </p>
 
         <p>
-            Obviously this requires a bit more work as now we need to evaluate the implicit surface as well as its first derivative at \(t\) before solving a quadratic equation. However the reduction in the number of steps we need to take to reach the surface often compensates for this added workload. Although we could extend this to a <a href="https://en.wikipedia.org/wiki/Cubic_equation">third-order</a> (cubic) Taylor approximation for which we can find analytical roots, the increased effort may no longer be worth it at that point.
+            Obviously this requires a bit more work as now we need to evaluate the implicit surface as well as its first derivative at \(t\) before solving a quadratic equation. However in some cases the reduction in the number of steps we need to take to reach the surface often compensates for this added workload.
         </p>
 
         <h2>
@@ -208,25 +220,58 @@
         </h2>
 
         <p>
-            Up to now we've been working with inclusion functions that cover the entire range of our implicit function. However we'd do just as fine if we had an inclusion function that only accounted for a small portion of our function corresponding to how far along the ray we'd like to step through. We also don't care about what's <i>behind</i> us along the ray because we've already passed it. We can apply what we've learned above to come up with inclusion functions that are valid for some bound \([t, t_0]\), where \(t_0\) is an arbitrary point along the that ray we'd like to test. In the case of our quadratic Taylor inclusion function, the second-order signed Lipschitz constants \(\lambda^{\pm}\) become:
+            The inclusion functions we've looked at so far will give us a minimum bound on the step size anywhere on the ray. However we can get an even tighter bound if we limit our area to a small segment along the ray. This what segment tracing does. Given two points on the ray \([t_0, t_1]\), we'd like to find the values \(\lambda^{\pm}\) corresponding to the inclusion function along this segment:
         </p>
 
         <p>
-            $$ \begin{aligned} \lambda^{+} = \max(f''(x)) \quad x \in [t, t_0] \\ \lambda^{-} = \min(f''(x)) \quad x \in [t, t_0] \end{aligned} $$
+            $$ \begin{aligned} \lambda^{+} = \max(f'(x)) \quad x \in [t_0, t_1] \\ \lambda^{-} = \min(f'(x)) \quad x \in [t_0, t_1] \end{aligned} $$
         </p>
 
         <p>
-            Determining the local Lipschitz constants \(\lambda^{\pm}\) is a little more involved, but we can still do this analytically. First, let \(x_0\) be any root of \(f''(x)\) such that \(f''(x) = 0\).
+            This can be solved analytically if we choose our metaball function carefully. The function I chose is:
         </p>
 
         <p>
-            $$ 
-                \lambda^{\pm} =
-                \left\{ \begin{array}{ c 1 }
-                x_0 & \quad t \le x_0 \le t_0 \\
-                    \max(f''(t), f''(t_0)) & \quad \textrm{otherwise}
-                \end{array} \right.
-            $$
+            $$ F(\vec{p}) = (1-|\vec{p}|^2)^3 \quad -1 \le x \le 1 $$
+        </p>
+
+        <p>
+            To find \(f(t) = F \circ \delta(t)\) we'll plug in the ray equation:
+        </p>
+        
+        <p>
+            $$ \begin{aligned} 
+                F \circ \delta(t) &= F(r_o + tr_d) \\
+                &= (1-|r_o + tr_d|^2)^3 \\
+                &= (1 - at^2 - 2bt - c)^3
+            \end{aligned} $$
+        </p>
+
+        <p>
+            Where:
+        </p>
+
+        <p>
+            $$ a = r_o \cdot r_o \quad b = r_o \cdot r_d \quad c = r_d \cdot r_d $$
+        </p>
+
+        <p>
+            The first derivative is:
+        </p>
+
+        <p>
+            $$ -6 (at + b) (1 - at^2 - 2bt - c)^2 $$
+        </p>
+
+        <p>
+            The values \(\lambda^{\pm}\) for this function are:
+        </p>
+
+        <p>
+            $$ \begin{aligned}
+                \lambda^{+} &= -\dfrac{b}{a} - \dfrac{\sqrt{5(b^2 - ac + a)}}{5a} \\
+                \lambda^{-} &= -\dfrac{b}{a} + \dfrac{\sqrt{5(b^2 - ac + a)}}{5a}
+            \end{aligned} $$
         </p>
 
         <h2>
@@ -265,6 +310,19 @@ float cosTheta = dot(coneDirection, normalize(positionVS + metaballOffset));
             Metaballs are represented by a struct containing a position, radius, and colour. The position and radius together take up 4 floats and the colour is quantized to 8 bits per channel and packed into a single uint. Altogether the struct occupies 20 bytes of memory which means we can fit a modest 512 metaballs in group shared memory for a reasonable memory cost of 10kb.
         </p>
 
+        <pre>
+            <code class="language-hlsl">
+struct Metaball
+{
+    float3 position;
+    float radius;
+    uint colour;
+};
+
+groupshared Metaball groupMetaballs[512];
+            </code>
+        </pre>
+
         <p>
             Once all the metaballs for a given tile are collected the shader can begin segment tracing. The ray uses the mininum and maximum view depths we determined earlier to provide a coarse bound over the location of the surface, and segment tracing begins at the start of this bound.
         </p>
@@ -280,19 +338,6 @@ float cosTheta = dot(coneDirection, normalize(positionVS + metaballOffset));
         <p>
             So after all that, is this worth it or useful at all? 
         </p>
-
-        <h2>
-            WIP
-        </h2>
-
-        <p>
-            It should be noted that SDFs are an example of the special case where the Lipschitz constant is 1. This property is part of what makes them so convenient and why they are one of the most common types of implicit surfaces you'll encounter when working with sphere tracing.
-        </p>
-
-        <p>
-            <a href="https://en.wikipedia.org/wiki/Ray_marching">Ray marching</a> is a popular graphics technique used for rendering complex scenes, and has been for quite some time. A quick look at <a href="https://www.shadertoy.com">Shadertoy</a> will provide no shortage of wonderful examples of what ray marching can achieve in a single shader.
-        </p>
-
 
     </body>
 </html>
