@@ -53,6 +53,7 @@ code {
 img, video {
     display: block;
     max-height: 512px;
+    max-width: 100%;
     margin: auto;
     filter: invert(1);
 }

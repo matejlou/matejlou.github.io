@@ -34,7 +34,7 @@
         </p>
 
         <p>
-            <img src="images/fig_implicitSurface.png" alt="Metaballs.">
+            <img src="images/fig_implicitSurface.png" alt="Plot of an implicit equation representing a circle.">
         </p>
 
         <p>
@@ -54,7 +54,7 @@
         </p>
 
         <p>
-            Plugging \(\delta(t)\) into the function \(F(\vec{p})\) gives us a one-dimensional function with respect to the ray parameter \(t\). The surface is found at the points where this function is equal to 0, in other words it corresponds to the function's <a href="https://en.wikipedia.org/wiki/Zero_of_a_function">roots</a>.
+            Plugging \(\delta(t)\) into the function \(F(\vec{p})\) gives us a one-dimensional function with respect to the ray parameter \(t\). The surface is found at the points where this function is equal to 0, in other words it corresponds to the function's <a href="https://en.wikipedia.org/wiki/Zero_of_a_function">roots</a>:
         </p>
 
         <p>
@@ -63,7 +63,7 @@
 
         <p>
             <figure>
-                <img src="images/fig_metaballs.png" alt="Metaballs.">
+                <img src="images/fig_metaballs.png" alt="">
                 <figcaption>Three metaballs as an implicit function and their representation along a ray as a 1D line.</figcaption>
             </figure>
         </p>
@@ -81,7 +81,10 @@
         </p>
 
         <p>
-            FIGURE.
+            <figure>
+                <img src="images/fig_rayMarching.png" alt="Graph representing the steps taken by ray marching in the process of finding a root.">
+                <figcaption>Ray marching can find the root relatively quickly at the risk of overstepping the surface.</figcaption>
+            </figure>
         </p>
 
         <p>
@@ -97,7 +100,10 @@
         </p>
 
         <p>
-            FIGURE.
+            <figure>
+                <img src="images/fig_lipschitz.png" alt="Graph of a bounding cone enclosing the entirety function.">
+                <figcaption>The bounding cone is guaranteed to always contain the entire function.</figcaption>
+            </figure>
         </p>
 
         <p>
@@ -128,6 +134,13 @@
             In other words the absolute value of \(\dfrac{f(t)}{\lambda}\) will give us a step size that is always less than or equal to the distance to the surface. Evaluating this value at every step along the ray can accelerate ray marching considerably.
         </p>
 
+        <p>
+            <figure>
+                <img src="images/fig_rayMarchingLipschitz.png" alt="Graph illustrating how the Lipschitz constant allows us to take smaller steps as we approach the surface.">
+                <figcaption>The Lipschitz constant allows us to step along the ray adaptively.</figcaption>
+            </figure>
+        </p>
+
         <details>
             <summary>
                 Lipschitz Constant of an SDF
@@ -150,11 +163,11 @@
         </h2>
 
         <p>
-            Using the Lipschitz constant to get a conservative step size is equivalent to finding the intersection between the ray and the enclosing cone mentioned earlier. For a point \(t\) along the ray, the two lines that make up the cone can be described by a pair of equations \(f^{+}\) and \(f^{-}\):
+            Using the Lipschitz constant to get a conservative step size is equivalent to finding the intersection between the ray and the enclosing cone mentioned earlier. For a point \(t\) along the ray, the two lines that make up the cone can be described by a pair of equations \(f^{+}\) and \(f^{-}\). Without loss of generality we'll set \(t = 0\):
         </p>
 
         <p>
-            $$ \begin{aligned} f^{+}(x) = f(t) + \lambda (x - t) \\ f^{-}(x) = f(t) - \lambda (x - t) \end{aligned} $$
+            $$ \begin{aligned} f^{+}(x) = f(t) + \lambda (x) \\ f^{-}(x) = f(t) - \lambda (x) \end{aligned} $$
         </p>
 
         <p>
@@ -162,7 +175,7 @@
         </p>
 
         <p>
-            $$ \begin{aligned} f(t) \pm \lambda (x - t) &= 0 \\ \pm \lambda (x - t) &= -f(t) \\ x - t &= \pm\dfrac{f(t)}{\lambda} \\ x &= t \pm \dfrac{f(t)}{\lambda} \end{aligned} $$
+            $$ \begin{aligned} f(t) \pm \lambda (x) &= 0 \\ \pm \lambda (x) &= -f(t) \\ x &= \pm\dfrac{f(t)}{\lambda} \end{aligned} $$
         </p>
 
         <p>
@@ -170,7 +183,7 @@
         </p>
 
         <p>
-            $$ \begin{aligned} f^{+}(x) &= f(t) + \lambda^{+} (x - t) \\ f^{-}(x) &= f(t) + \lambda^{-} (x - t) \end{aligned} $$
+            $$ \begin{aligned} f^{+}(x) &= f(t) + \lambda^{+} (x) \\ f^{-}(x) &= f(t) + \lambda^{-} (x) \end{aligned} $$
         </p>
 
         <p>
@@ -182,11 +195,18 @@
         </p>
 
         <p>
+            <figure>
+                <img src="images/fig_inclusionAsymmetric.png" alt="">
+                <figcaption>An asymmetric inclusion function.</figcaption>
+            </figure>
+        </p>
+
+        <p>
             Often this gives us an even better idea of how far along the ray we can safely step. But we don't need to limit ourselves to straight lines. Replacing our bounding lines with bounding parabolas gives us an even tighter inclusion function whose roots are still relatively simple to solve for. If we let \(\gamma^{\pm}\) be the minimum and maximum values of the <i>second</i> derivative of \(f(t)\) then:
         </p>
 
         <p>
-            $$ \begin{aligned} f^{+}(x) &= f(t) + f'(t)(x - t) + \dfrac{\gamma^{+} (x - t)^2}{2} \\ f^{-}(x) &= f(t) + f'(t)(x - t) + \dfrac{\gamma^{-} (x - t)^2}{2} \end{aligned} $$
+            $$ \begin{aligned} f^{+}(x) &= f(t) + f'(t)x + \dfrac{\gamma^{+} x^2}{2} \\ f^{-}(x) &= f(t) + f'(t)x + \dfrac{\gamma^{-} x^2}{2} \end{aligned} $$
         </p>
 
         Where:
@@ -196,11 +216,18 @@
         </p>
 
         <p>
-            Now finding the roots at \(f^{\pm}(x) = 0\) involves solving a quadratic equation, which we can do using the <a href="https://en.wikipedia.org/wiki/Quadratic_formula">quadratic formula.</a> The roots of the bounding lines can be expressed like so:
+            <figure>
+                <img src="images/fig_inclusionQuadratic.png" alt="">
+                <figcaption>A quadratic asymmetric inclusion function.</figcaption>
+            </figure>
         </p>
 
         <p>
-            $$ x = \dfrac{-b \pm \sqrt{b^2 - ac}}{a} $$
+            Now finding the roots at \(f^{\pm}(x) = 0\) involves solving a quadratic equation, which we can do using the <a href="https://en.wikipedia.org/wiki/Quadratic_formula">quadratic formula.</a> The roots of the bounding parabolas can be expressed like so:
+        </p>
+
+        <p>
+            $$ x = \dfrac{-b \pm \sqrt{b^2 - 2ac}}{a} $$
         </p>
 
         <p>
@@ -208,7 +235,7 @@
         </p>
 
         <p>
-            $$ \begin{aligned} a &= \lambda^{\pm} \\ b &= f'(t) - \lambda^{\pm}t \\ c &= \lambda^{\pm}t^2 - 2f'(t)t + 2f(t) \end{aligned} $$
+            $$ a = \gamma^{\pm} \quad b = f'(t) \quad c = f(t) $$
         </p>
 
         <p>
@@ -220,59 +247,41 @@
         </h2>
 
         <p>
-            The inclusion functions we've looked at so far will give us a minimum bound on the step size anywhere on the ray. However we can get an even tighter bound if we limit our area to a small segment along the ray. This what segment tracing does. Given two points on the ray \([t_0, t_1]\), we'd like to find the values \(\lambda^{\pm}\) corresponding to the inclusion function along this segment:
+            The inclusion functions we've looked at so far will give us a global bound on the step size anywhere on the ray. However, if we restrict the area of interest to a smaller portion of the ray we are likely to get an even tighter bound. This is the idea behind segment tracing. Given a point on the ray \(t\) and an initial step size \(\epsilon\), segment tracing finds the inclusion function along the segment bounded by \([t, t + \epsilon]\).
         </p>
 
         <p>
-            $$ \begin{aligned} \lambda^{+} = \max(f'(x)) \quad x \in [t_0, t_1] \\ \lambda^{-} = \min(f'(x)) \quad x \in [t_0, t_1] \end{aligned} $$
+            $$ \begin{aligned} \lambda^{+} = \max(f'(x)) \quad x \in [t, t + \epsilon] \\ \lambda^{-} = \min(f'(x)) \quad x \in [t, t + \epsilon] \end{aligned} $$
         </p>
 
-        <p>
-            This can be solved analytically if we choose our metaball function carefully. The function I chose is:
-        </p>
+        <div>
+            <figure>
+                <table>
+                    <tr>
+                        <td><img src="images/fig_inclusionLocalLinear.png" alt=""></td>
+                        <td><img src="images/fig_inclusionLocalQuadratic.png" alt=""></td>
+                    </tr>
+                </table>
+                <figcaption>The linear (left) and quadratic (right) inclusion functions along a segment of the ray.</figcaption>
+            </figure>
+        </div>
 
         <p>
-            $$ F(\vec{p}) = (1-|\vec{p}|^2)^3 \quad -1 \le x \le 1 $$
+            We then march along the ray by the safe step size \(t_{step}\) given by the local inclusion function, or by \(\epsilon\) if \(t_{step} > \epsilon\). Each iteration we choose a new \(\epsilon\) based on the size of the previous step multiplied by some factor \(\kappa\) in an attempt to make a larger step.
         </p>
 
-        <p>
-            To find \(f(t) = F \circ \delta(t)\) we'll plug in the ray equation:
-        </p>
-        
-        <p>
-            $$ \begin{aligned} 
-                F \circ \delta(t) &= F(r_o + tr_d) \\
-                &= (1-|r_o + tr_d|^2)^3 \\
-                &= (1 - at^2 - 2bt - c)^3
-            \end{aligned} $$
-        </p>
-
-        <p>
-            Where:
-        </p>
-
-        <p>
-            $$ a = r_o \cdot r_o \quad b = r_o \cdot r_d \quad c = r_d \cdot r_d $$
-        </p>
-
-        <p>
-            The first derivative is:
-        </p>
-
-        <p>
-            $$ -6 (at + b) (1 - at^2 - 2bt - c)^2 $$
-        </p>
-
-        <p>
-            The values \(\lambda^{\pm}\) for this function are:
-        </p>
-
-        <p>
-            $$ \begin{aligned}
-                \lambda^{+} &= -\dfrac{b}{a} - \dfrac{\sqrt{5(b^2 - ac + a)}}{5a} \\
-                \lambda^{-} &= -\dfrac{b}{a} + \dfrac{\sqrt{5(b^2 - ac + a)}}{5a}
-            \end{aligned} $$
-        </p>
+                <div>
+            <figure>
+                <table>
+                    <tr>
+                        <td><img src="images/fig_sphereTrace.png" alt=""></td>
+                        <td><img src="images/fig_segmentTraceLinear.png" alt=""></td>
+                        <td><img src="images/fig_segmentTraceQuadratic.png" alt=""></td>
+                    </tr>
+                </table>
+                <figcaption>The steps taken by different approaches in the process of finding a root. Left: ray marching with global Lipschitz constant, middle: segment tracing with linear inclusion, right: segment tracing with quadratic inclusion.</figcaption>
+            </figure>
+        </div>
 
         <h2>
             Implementation
@@ -337,6 +346,115 @@ groupshared Metaball groupMetaballs[512];
 
         <p>
             So after all that, is this worth it or useful at all? 
+        </p>
+
+        <h2>
+            Appendix
+        </h2>
+
+        <h3>
+            Deriving the Local Inclusion Function for Metaballs
+        </h3>
+
+        <p>
+            For segment tracing to work we need to know where the minima and maxima of the first (and potentially second) derivatives of the function lie along the ray.
+        </p>
+
+        <p>
+            This can be solved analytically if we choose our metaball function carefully. The function I chose is:
+        </p>
+
+        <p>
+            $$ F(\vec{p}) = (1-|\vec{p}|^2)^3 \quad -1 \le x \le 1 $$
+        </p>
+
+        <p>
+            Let's say we want to find \(\lambda^{+} = \max(f'(x))\) for a segment \(x \in [t_0, t_1]\) along the ray. If we plot the derivative of \(F \circ \delta(t)\), we see that it has exactly one maximum:
+        </p>
+
+        <p>
+            <figure>
+                <img src="images/fig_kernelFirstDerivative.png" alt="TEMP.">
+                <figcaption>CAPTION</figcaption>
+            </figure>
+        </p>
+
+        <p>
+            The value \(x_0\) that gives us the maximum when we plug it into \(f'(x)\) is:
+        </p>
+
+        <p>
+            $$ x_0 = \dfrac{-5b - \sqrt{5} \sqrt{b^2 - ac + a}}{5a} $$
+        </p>
+
+        <details>
+            <summary>
+                Derivation
+            </summary>
+            <div>
+                <p>
+                    To find \(f(t) = F \circ \delta(t)\) we'll plug in the ray equation:
+                </p>
+            
+                <p>
+                    $$ \begin{aligned} 
+                        F \circ \delta(t) &= F(r_o + tr_d) \\
+                        &= (1-|r_o + tr_d|^2)^3 \\
+                        &= (1 - at^2 - 2bt - c)^3
+                    \end{aligned} $$
+                </p>
+
+                <p>
+                    Where:
+                </p>
+
+                <p>
+                    $$ a = r_o \cdot r_o \quad b = r_o \cdot r_d \quad c = r_d \cdot r_d $$
+                </p>
+
+                <p>
+                    The first derivative is:
+                </p>
+
+                <p>
+                    $$ f'(t) = -6 (at + b) (1 - at^2 - 2bt - c)^2 $$
+                </p>
+
+                <p>
+                    The maximum of \(f'(t)\) can be found by analysing the roots of the second derivative:
+                </p>
+
+                <p>
+                    $$ f''(t) = -6t(1 - at^2 - 2bt - c)^2 + 24(1 - at^2 - 2bt - c)(at + b)^2 $$
+                </p>
+
+                <p>
+                    Doing so results in a quadratic equation which we can solve.
+                </p>
+
+                <p>
+                    $$ x_0 = \dfrac{-5b \pm \sqrt{5} \sqrt{b^2 - ac + a}}{5a} $$
+                </p>
+
+            </div>
+        </details>
+
+        <p>
+            To find the local maximum within this segment we need to look at where the end points \([t_0, t_1]\) lie in relation to \(x_0\). If \(x_0\) lies between the end points, then the maximum is equal to \(f(x_0)\). Otherwise, it is the largest of \(f(t_0)\) and \(f(t_1)\):
+        </p>
+
+        <p>
+            $$ \begin{equation}
+                \lambda^{+} =
+                \begin{cases}
+                    f'(x_0) & \text{if}\ x_0 \in [t_0, t_1] \\
+                    \max(f'(t_0), f'(t_1)) & \text{otherwise}
+                \end{cases}
+            \end{equation} $$
+        </p>
+
+        <p>
+            Similar logic can be used to find \(\lambda^{-}\).
         </p>
 
     </body>
