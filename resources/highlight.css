@@ -9,8 +9,8 @@ code.hljs {
 }
 
 .hljs {
-  background: #242223;
-  color: #e0dfd4;
+  background: rgb(41, 37, 43);
+  color: rgb(241, 241, 234);
 }
 
 /* Base color: saturation 0; */
