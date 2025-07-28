@@ -1,24 +1,79 @@
 :root {
   color-scheme: light dark;
+  --colour-background-primary: light-dark(rgb(250, 250, 248), rgb(22, 20, 23));
+  --colour-background-secondary: light-dark(rgb(240, 240, 232), rgb(41, 37, 43));
+  --colour-text-primary: light-dark(rgb(43, 41, 38), rgb(241, 241, 234)); 
+  --colour-link-passive: light-dark(rgb(199, 39, 14), rgb(233, 115, 52));
+  --colour-link-active: light-dark(rgb(255, 94, 94), rgb(255, 177, 52));
 }
 
 body {
-    background-color: light-dark(rgb(250, 250, 248), rgb(22, 20, 23));
-    color: light-dark(rgb(43, 41, 38), rgb(241, 241, 234)); 
+    background-color: var(--colour-background-primary);
+    color: var(--colour-text-primary);
     font-family: verdana;
+    font-size: 16px;
     max-width: 800px;
     padding: 16px;
     margin: auto;
 }
 
+hr {
+    color: var(--colour-text-primary);
+    border-style: solid;
+    border-width: 0.5px;
+}
+
+.menu {
+    display: flex;
+    border-style: none;
+    flex-direction: row;
+    justify-content: space-between;
+    height: 48px;
+    line-height: 48px;
+    font-size: 18px;
+    font-weight: bold;
+    text-align: center;
+}
+
+.menu-left {
+    align-self: flex-start;
+}
+
+.menu-right {
+    align-self: flex-end;
+}
+
+.menu-table-pages-entry {
+    padding-right: 12px;
+}
+
+.menu-table-socials-entry {
+    padding: 2px;
+}
+
+.socials-icon {
+    display: block;
+    margin: auto;
+    width: 36px;
+    height: 36px;
+    fill: var(--colour-link-passive);
+    padding: 4px;
+    border-style: none;
+    border-width: 2px;
+}
+
+.socials-icon:hover {
+    fill: var(--colour-link-active);
+}
+
 a:link, a:visited {
-  color: light-dark(rgb(66, 46, 254), rgb(233, 115, 52));
-  text-decoration: none;
+    color: var(--colour-link-passive);
+    text-decoration: none;
 }
 
 a:hover, a:active {
-  color: light-dark(rgb(147, 120, 255), rgb(255, 177, 52));
-  text-decoration: none;
+    color: var(--colour-link-active);
+    text-decoration: none;
 }
 
 pre {
@@ -33,11 +88,11 @@ details {
     border-style: solid;
     border-radius: 5px;
     border-color: rgb(135, 135, 135);
-    background-color: light-dark(rgb(243, 243, 237), rgb(41, 37, 43));
+    background-color: var(--colour-background-secondary);
 }
 
 details[open] summary {
-  margin-bottom: 0.5em;
+    margin-bottom: 0.5em;
 }
 
 code {
