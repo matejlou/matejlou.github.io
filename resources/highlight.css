@@ -59,14 +59,8 @@ code.hljs {
 .hljs-quote,
 .hljs-template-tag,
 .hljs-deletion {
-  color: light-dark(#1913c9, #9e6eff);
+  color: light-dark(#1913c9, #bd8aff);
   font-weight: bold
-}
-
-.hljs-title,
-.hljs-section {
-  color: #880000;
-  font-weight: bold;
 }
 
 .hljs-regexp,
@@ -84,15 +78,17 @@ code.hljs {
 
 .hljs-literal,
 .hljs-number {
-  color: light-dark(#227328, #addf8b);
+  color: light-dark(#048700, #d5de7a);
 }
 
 .hljs-built_in,
 .hljs-bullet,
 .hljs-code,
-.hljs-addition {
+.hljs-addition,
+.hljs-title,
+.hljs-section {
   font-weight: bold;
-  color: light-dark(#b63705, #eea91e);
+  color: light-dark(#a92403, #eea91e);
 }
 
 /* Meta color: hue: 200 */
