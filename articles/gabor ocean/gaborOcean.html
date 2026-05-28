@@ -1,0 +1,701 @@
+<!doctype html>
+
+<html lang="en">
+    <head>
+        <title> Site Name. </title>
+        <link rel="stylesheet" href="/styles.css">
+        <link rel="stylesheet" href="/resources/dark.min.css">
+        <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+        <script src="/resources/highlight.min.js"></script>
+        <script src="/resources/hlsl.min.js"
+    ></script>
+        <script>hljs.highlightAll();</script>
+    </head>
+
+    <body>
+        <header>
+
+        </header>
+
+        <h1>
+            Ocean Simulation With Gabor Noise
+        </h1>
+
+        <h2>
+            Noise and The Frequency Spectrum (WIP)
+        </h2>
+
+        <h2>
+            The Unique Spectral Properties of Gabor Kernels (WIP)
+        </h2>
+
+        <p>
+            The parameters defining a Gabor kernel have a direct correspondence to the parameters of a Gaussian in the spectral domain. First, let's take a look at the sinusoidal component. Consider a plane wave with frequency \(k\), phase \(\phi\), direction \(\mathbf{\omega}\) and amplitude \(A\):
+        </p>
+
+        <p>
+            $$ f(\mathbf{x}; k, \phi, \mathbf{\omega}, A) = A \sin(k\mathbf{x} \cdot \mathbf{\omega} + \phi) $$
+        </p>
+
+        <p>
+            The magnitude of the Fourier transform
+        </p>
+
+        <p>
+            $$ |\mathcal{F}(f(\mathbf{x}))(\mathbf{\xi})| = A \delta(\mathbf{\xi} \pm k\mathbf{\omega}) $$
+        </p>
+
+        <p>
+            Next, consider a Gaussian with covariance matrix \(\mathbf{\Sigma}\):
+        </p>
+
+        <p>
+            $$ g(\mathbf{x}; \mathbf{\Sigma}) = \exp(-\mathbf{x}^{\top}\mathbf{\Sigma}^{-1}\mathbf{x}) $$
+        </p>
+
+        <p>
+            Likewise, 
+        </p>
+
+        <p>
+            $$ |\mathcal{F}(g(\mathbf{x}))(\mathbf{\xi})| = \dfrac{\pi}{\sqrt{|\mathbf{\Sigma}^{-1}|}} \exp(-\dfrac{1}{4}\mathbf{\xi}^{\top}\mathbf{\Sigma}\mathbf{\xi}) $$
+        </p>
+
+        <p>
+            All that's left is to find the Fourier transform of the product \(f(\mathbf{x})g(\mathbf{x})\). The convolution theorem states that this is equivalent to \(\hat{f}(\mathbf{x}) * \hat{g}(\mathbf{x})\). Since \(\hat{f}\) is just a scaled and shifted the dirac delta, the sifting property of the Fourier transform tells us that the result is simply an equivalently scaled and shifted \(\hat{g}\). Which leads us to the final formulation:
+        </p>
+
+        <p>
+            $$ \hat{G}(\mathbf{\xi}; k, \phi, \mathbf{\omega}, A, \mathbf{\Sigma}) = \dfrac{A\pi}{\sqrt{|\mathbf{\Sigma}^{-1}|}} \exp(-\dfrac{1}{4} (\mathbf{\xi} \pm k\mathbf{\omega})^{\top}\mathbf{\Sigma}(\mathbf{\xi} \pm k\mathbf{\omega})) $$
+        </p>
+
+        <p>
+            So given the parameters of a frequency-domain Gaussian \(\hat{\mathbf{\Sigma}}\), \(\hat{\mathbf{\mu}}\), \(\hat{A}\), the parameters of the corresponding spatial-domain Gabor kernel are:
+        </p>
+
+        <p>
+            $$ 
+                k = |\mathbf{\hat{\mu}}|, \quad 
+                \mathbf{\omega} = \dfrac{\mathbf{\hat{\mu}}}{|\mathbf{\hat{\mu}}|}, \quad 
+                A = \dfrac{\hat{A} \sqrt{|\hat{\mathbf{\Sigma}}^{-1}}|}{\pi}, \quad 
+                \mathbf{\Sigma} = 4 \hat{\mathbf{\Sigma}}^{-1} 
+            $$
+        </p>
+
+        <h2>
+            Optimising Gabor Noise (WIP)
+        </h2>
+
+        <h2>
+            Simulating Wave Spectra (WIP)
+        </h2>
+
+        <p>
+            A common technique in ocean simulation is to take a parameterised description of the ocean in the frequency domain and transform it to the spatial domain via the discrete Fourier transform. The power of Gabor noise however is that it gives us precise control of our noise's spectral content while remaining entirely in the spatial domain. Recall that the bandwidth of a Gabor kernel is inversely proportional to the spatial width of its window. When generating Gabor noise on a fixed lattice, all windows have the same width. This means that the final generated noise is band-limited. 
+        </p>
+
+        <p>
+            FIGURE
+        </p>
+
+        <p>
+            By summing multiple bands of noise at different frequencies and amplitudes we can easily generate arbitrary isotropic spectra. This is exactly the process behind the popular fractional Brownian Motion (fBM) technique. Given a description of some spectral profile as a function \(s(k)\) that takes in a frequency \(k\) and returns a magnitude \(|z|\), we can shape our noise by feeding the center frequency of each band through the function to determine the corresponding spatial-domain amplitude of that band.
+        </p>
+
+        <p>
+            FIGURE
+        </p>
+
+        <p>
+            We can reframe this as a sampling problem. We want to reconstruct the spectral profile by taking the sum of \(N\) discrete samples (bands) at sample points (frequencies) \(x_n\) using a Gaussian kernel \(f(x)\) of width (bandwidth) \(b_n\). Formally:
+        </p>
+
+        <p>
+            $$ s(k) \approx \sum_{n=0}^{N-1} f(\dfrac{x_n - k}{b_n})s(x_n) $$
+        </p>
+
+        <p>
+            If our spectral profile \(s(k)\) is unchanging, then we could formulate this as a minimisation problem to find the optimal \(k_n\), \(b_n\) for some fixed \(N\). However, a more generic approach is preferred as it allows for real-time flexibility. The simplest solution is just to sample \(s(k)\) at fixed intervals of equal bandwidth, effectively resulting in a Gaussian smoothing of the original profile.
+        </p>
+
+        <p> 
+            FIGURE
+        </p>
+
+        <p>
+            There are two main drawbacks to this however. The first is that the sample rate must be high enough to capture sharp peaks in the spectrum lest important details be lost. The second is that sampling large regions of low-energy content in the spectrum leads to a waste of computation as these areas contribute very little to the final profile, and this is compounded by the first issue should the sample rate be very high.
+        </p>
+
+        <p>
+            FIGURE
+        </p>
+
+        <p>
+            Fortunately, wave spectra share similar characteristics that we can exploit to our advantage. Spectra are characterised by a sharp low-frequency peak with a gradual falloff as the frequency increases. This suggests that samples should be concentrated around the peak frequency, spreading out as we sample the higher frequencies. By increasing the sample distance \(h\) in proportion to the bandwidth we can efficiently cover the whole spectrum with much fewer samples. For a given spectral profile \(s(k)\) we need to determine the peak frequency \(f_0\), which we will refer to as the fundamendal, as well as the full width at half maximum (FWHM) \(\gamma\). The first sample can then be placed at the fundamental with the sample distance following an increasing geometric series, while the FWHM determines the initial bandwidth.
+        </p>
+
+        <p>
+            FIGURE
+        </p>
+
+        <p>
+            The bandwidth of the first sample should be just big enough to approximately cover the lower tail of the spectrum. To do this, we can use the full width at half maximum (FWHM) of the peak. Finding the FWHM for arbtitrary spectra can be difficult however as an analytic solution is not always guaranteed to exist. Instead we can use a local 2nd-order Taylor approximation at the peak, resulting in a quadratic whose FWHM can be easily derived.
+        </p>
+
+        <p>
+            FIGURE
+        </p>
+
+        <p>
+            For a general quadratic \( ax^2 + bx + c \), the FWHM \(\gamma\) is given by the following:
+        </p>
+
+        <p>
+            $$ \gamma = \dfrac{\sqrt{4ac - b^2}}{|a|} $$
+        </p>
+
+        <p>
+            From here we seek the corresponding Gaussian with the same FWHM. For a general Gaussian of the form \( e^{-\sigma x^2} \) its FWHM is:
+        </p>
+
+        <p>
+            $$ \gamma = 2 \sqrt{\dfrac{\ln{2}}{\sigma}} $$
+        </p>
+
+        <p>
+            Rearranging for \(\sigma\):
+        </p>
+
+        <p>
+            $$ \sigma = \dfrac{4 \ln{2}}{\gamma^2} $$
+        </p>
+
+        <p>
+            We know that for a Gaussian in the frequency-domain with scaling parameter \(\sigma\), the corresponding spatial-domain parameter is \(\dfrac{1}{4\sigma}\). Thus the equation becomes:
+        </p>
+
+        <p>
+            $$ \sigma = \dfrac{\gamma^2}{8 \ln{2}} $$
+        </p>
+
+        <p>
+            From here we can find the 
+        </p>
+
+        <p>
+            $$ \gamma = \dfrac{4 \sqrt{2} \ln{2}}{\gamma} $$
+        </p>
+
+        <p>
+            For a frequency domain Gaussian with bandwidth \(\sigma\), the FWHM \(\gamma\) of the corresponding spatial domain Gaussian is:
+        </p>
+
+        <p>
+            $$ \gamma = 4 \sqrt{\sigma \ln{2}} $$
+        </p>
+
+        <p>
+            We define the sample distance \(h\) as a function of the bandwidth. This is useful in general especially when attempting to produce periodic noise, where the resolution of the lattice grid and consequently the width of the spatial kernel is limited to a unit fraction of the texture size. Note that in this case we cannot use the FWHM to set the starting bandwidth, as the bandwidth must be quantised. Instead a sufficiently narrow bandwidth will suffice.
+        </p>
+
+        <p>
+            A suitable metric for determining the distance \(h\) between two samples is to place them such that they sum to 1 at their intersection, or equivalently, \(h = \dfrac{\gamma_0 + \gamma_1}{2}\) where \(\gamma\) is the full width at half maximim (FWHM) of each Gaussian. For a Gaussian with bandwidth \(b\).
+        </p>
+
+        <p>
+            $$ h_n = \dfrac{\gamma_n + \gamma_{n-1}}{2}, \quad \gamma_n = 2 \sqrt{\dfrac{\ln{2}}{b_n}} $$
+        </p>
+
+        <p>
+            $$ h_n = (\sqrt{b_n} + \sqrt{b_{n-1}}) \sqrt{\ln{2}} $$
+        </p>
+
+        <p>
+            The fundamental of a spectral profile is found where \(s'(f_0) = 0\). The FWHM is trickier to express analytically for most wave spectra. Instead we can use a quadratic Taylor approximation at the fundamental, which has a simple closed-form expression for the FWHM.
+        </p>
+
+        <h3>
+            Directional Spreading
+        </h3>
+
+        <p>
+            So far we have ignored the directional component of the ocean spectrum. This is largely because it is seperable from the isotropic component, and thus we can use alternative sampling strategies to shape it. A lot of literature on ocean simulation for graphics applications only touches very briefly on this aspect of the ocean spectrum, and most solutions simply include an extra factor accounting for the dot product between the primary direction and the wave angle.
+        </p>
+
+        <p>
+            This dot product factor produces a cosine distribution, which is in fact not too far off from a common directional spectral profile often cited in ocean optics, the <i>cosine 2s spreading function</i>. It is defined as: 
+        </p>
+
+        <p>
+            $$d(\theta) = \cos(\omega - \theta)^{2s}, \quad -\dfrac{\pi}{2} \le \omega - \theta \le \dfrac{\pi}{2} $$
+        </p>
+
+        <p>
+            If we take a cross-section of an isotropic Gaussian along circular arc in the frequency domain, we see that it too follows a very similar cosine-shaped profile.
+        </p>
+
+        <p>
+            FIGURE.
+        </p>
+
+        <p>
+            
+        </p>
+
+        <p>
+            Another important detail in simulating accurate oceans is taking into account how the spreading function varies with the frequency of the wave. Lower frequency waves exhibit a narrower directional spread whereas high frequency waves are more isotropic.
+        </p>
+
+        <h3>
+            Ocean Swell
+        </h3>
+
+        <p>
+            It is not uncommon to see two peaks in ocean spectra, corresponding to waves produced by wind and as well as swell. A second peak can be simulated by adding another band of noise. The principal direction of each peak is often uncorrelated.
+        </p>
+
+        <hr></hr>
+
+        <p>
+            Given the magnitude of a frequency-domain Gaussian sample at \(\hat{A}\), we know that the corresponding spatial-domain amplitude is \(\dfrac{\hat{A} \sqrt{|\hat{\mathbf{\Sigma}}^{-1}}|}{\pi}\). As we are only sampling isotropic Gaussians, the covariance matrix \(\mathbf{\Sigma}\) can be expressed as a scaled identity matrix \(b\mathbf{I}\), where \(b\) is the bandwidth of the Gaussian in the frequency domain. Knowing this, the spatial-domain amplitude simplifies to:
+        </p>
+
+        <p>
+            $$ A = \dfrac{\hat{A}}{b \pi} $$ 
+        </p>
+
+        <h2>
+            Anisotropically Filtering Gabor Noise (WIP)
+        </h2>
+
+        <p>
+            The really nice thing about Gaussians is that the product of two Gaussians can be equivalently expressed by the sum of their exponents. Consider two Gaussians in frequency space with mean \(\mathbf{\mu}\) and covariance matrix \(\mathbf{\Sigma}\):
+        </p>
+
+        <p>
+            $$ 
+            \begin{aligned}
+            G_a(\mathbf{x}) G_b(\mathbf{x}) &= 
+                \exp(-(\mathbf{x} - \mathbf{\mu_a})^{\top} \mathbf{\Sigma_a} (\mathbf{x} - \mathbf{\mu_a}))
+                \exp(-(\mathbf{x} - \mathbf{\mu_b})^{\top} \mathbf{\Sigma_b} (\mathbf{x} - \mathbf{\mu_b})) \\
+            &= 
+                \exp(-(\mathbf{x} - \mathbf{\mu_a})^{\top} \mathbf{\Sigma_a} (\mathbf{x} - \mathbf{\mu_a})
+                -(\mathbf{x} - \mathbf{\mu_b})^{\top} \mathbf{\Sigma_b} (\mathbf{x} - \mathbf{\mu_b})) \\
+            \end{aligned}
+            $$
+        </p>
+
+        <p>
+            The exponent is now the difference of two quadratic forms, but in order to extract the parameters of the spatial-domain Gabor kernel we require the exponent to be expressed as a single quadratic form \(-(\mathbf{x} - \mathbf{\mu})^{\top} \mathbf{\Sigma} (\mathbf{x} - \mathbf{\mu})\). If we expand both expressions and combine terms we can express the Gaussian as follows:
+        </p>
+
+        <p>
+            $$ \exp(\mathbf{x}^{\top} \mathbf{A} \mathbf{x} + 2 \mathbf{b}^{\top} \mathbf{x} + c) $$
+        </p>
+
+        <p>
+            Where:
+        </p>
+
+        <p>
+            $$ \mathbf{A} =, \quad \mathbf{b} =, \quad c = $$
+        </p>
+
+        <p>
+            We can now complete the square, dropping the linear term and allowing us to take out the constant term from the exponent:
+        </p>
+
+        <p>
+            $$ \begin{aligned} 
+                \exp(\mathbf{x}^{\top} \mathbf{A} \mathbf{x} + 2 \mathbf{b} \cdot \mathbf{x} + c)
+            &=
+                \exp((\mathbf{x} - \mathbf{A}^{-1} \mathbf{b})^{\top} \mathbf{A} (\mathbf{x} - \mathbf{A}^{-1} \mathbf{b}) -
+                \mathbf{b}^{\top} \mathbf{A}^{-1} \mathbf{b} + c) \\
+            &=
+                \exp((\mathbf{x} - \mathbf{A}^{-1} \mathbf{b})^{\top} \mathbf{A} (\mathbf{x} - \mathbf{A}^{-1} \mathbf{b}))
+                \exp(-\mathbf{b}^{\top} \mathbf{A}^{-1} \mathbf{b} + c) \\
+            \end{aligned} $$
+        </p>
+
+        <p> 
+            Thus, the parameters for a Gabor kernel after convolution with a Gaussian filter are:
+        </p>
+
+        <hr></hr>
+
+        <p>
+            Let's follow the operations required to take a screen-space coordinate \(\mathbf{s}\) and project it onto the tangent-space of a plane at \(\mathbf{q}\). We start by determining the parameters of the ray in world-space given by \(\mathbf{r_o}\) and \(\mathbf{r_d}\). For a perspective camera, only \(\mathbf{r_d}\) is dependent on \(\mathbf{s}\) while \(\mathbf{r_o}\) is a constant, and vice-versa for an orthographic camera. In the former case a view-space direction vector \(\mathbf{d}\) can be constructed as follows:
+        </p>
+
+        <p>
+            $$ \mathbf{d} = \begin{bmatrix} \mathbf{s_x} \\ c_f \\ \mathbf{s_y} \end{bmatrix} $$
+        </p>
+
+        <p>
+            Where \(c_f\) is the focal length, or the distance from the camera's origin to the projection plane. Note that this assumes a Y-forward convention for the view-space coordinate system, other conventions can be met by swapping or negating the components of \(\mathbf{d}\). From here we can get the world-space ray direction by normalising \(\mathbf{d}\) and multiplying it by the inverse of the camera's view matrix \(\mathbf{V}\):
+        </p>
+
+        <p>
+            $$ \mathbf{r_d} = \mathbf{V}^{-1}\dfrac{\mathbf{d}}{|\mathbf{d}|} $$
+        </p>
+
+        <p>
+            Next, we need to find the point at which the ray intersects the tangent plane. Given a plane with origin \(\mathbf{P_o}\) and normal \(\mathbf{P_N},\) we know a given point along the ray parameterised by \(t\) is on the plane when:
+        </p>
+
+        <p>
+            $$ (\mathbf{r_o} + t \mathbf{r_d} - \mathbf{P_o}) \cdot \mathbf{P_N} = 0 $$
+        </p>
+
+        <p>
+            By rearranging this equation to solve for \(t\) we can determine the intersection with the plane at \(\mathbf{p}\):
+        </p>
+
+        <p>
+            $$ \mathbf{p} = \mathbf{r_o} + t \mathbf{r_d}, \quad t = \dfrac{(\mathbf{P_o} - \mathbf{r_o}) \cdot \mathbf{P_N}}{\mathbf{r_d} \cdot \mathbf{P_N}} $$
+        </p>
+
+        <p>
+            Finally, given the plane's tangent \(\mathbf{P_T}\) and bitangent \(\mathbf{P_B}\) vectors, the projection of \(\mathbf{p}\) onto the plane's local coordinate system is given by:
+        </p>
+
+        <p>
+            $$ \mathbf{q} = \begin{bmatrix} \mathbf{P_T} \\ \mathbf{P_B} \end{bmatrix} (\mathbf{p} - \mathbf{P_o}) $$
+        </p>
+
+        <p>
+            Now, for a given change in screen-space \(\Delta\mathbf{s}\) we seek the corresponding change in tangent-space \(\Delta\mathbf{q}\). This is given by the product of \(\Delta\mathbf{s}\) with the Jacobian \(\mathbf{J_T}\) of the total transformation:
+        </p>
+
+        <p>
+            $$ \Delta\mathbf{q} = \mathbf{J'} \Delta\mathbf{s} $$
+        </p>
+
+        <p>
+            To make things easier we can express the tangent-space coordinates \(\mathbf{T}\) as a composition of functions:
+        </p>
+
+        <p>
+            $$ \mathbf{T}(\mathbf{s}) = \mathbf{q} \circ \mathbf{p} \circ \mathbf{r_d} \circ \mathbf{d} \circ \mathbf{s} $$
+        </p>
+
+        <p>
+            Then, following the chain rule, the Jacobian is simply the product of each function's Jacobians evaluated at the appropriate points:
+        </p>
+
+        <p>
+            $$ \mathbf{J_T} = \mathbf{J_q}(\mathbf{p}) \cdot \mathbf{J_p}(\mathbf{r_d}) \cdot \mathbf{J_{r_d}}(\mathbf{d}) \cdot \mathbf{J_d}(\mathbf{s}) $$
+        </p>
+
+        <p>
+            Both \(\mathbf{J_q}\) and \(\mathbf{J_d}\) evaluate to constant matrices:
+        </p>
+
+        <p>
+            $$ \mathbf{J_q} = \begin{bmatrix} \mathbf{P_T} \\ \mathbf{P_B} \end{bmatrix}, \quad \mathbf{J_d} = \begin{bmatrix} 1 \\ 0 \\ 1 \end{bmatrix} $$
+        </p>
+
+        <p>
+            The remaining Jacobians \(\mathbf{J_p}\) and \(\mathbf{J_{r_d}}\) are a bit more involved. A simple way to approximate them would be via forward differencing:
+        </p>
+
+        <p>
+            $$ 
+                \mathbf{J_p} \approx  
+                    \left.
+                        \begin{bmatrix} 
+                            \mathbf{p}(\mathbf{s_x} + \Delta\mathbf{s_x}, \mathbf{s_y}) - \mathbf{p}(\mathbf{s}) \\
+                            \mathbf{p}(\mathbf{s_x}, \mathbf{s_y} + \Delta\mathbf{s_y}) - \mathbf{p}(\mathbf{s})
+                        \end{bmatrix} 
+                    \middle/
+                        \Delta\mathbf{s}
+                    \right.
+                ,\quad
+                \mathbf{J_{r_d}} \approx 
+                    \left.
+                        \begin{bmatrix} 
+                            \mathbf{r_d}(\mathbf{s_x} + \Delta\mathbf{s_x}, \mathbf{s_y}) - \mathbf{r_d}(\mathbf{s}) \\
+                            \mathbf{r_d}(\mathbf{s_x}, \mathbf{s_y} + \Delta\mathbf{s_y}) - \mathbf{r_d}(\mathbf{s})
+                        \end{bmatrix} 
+                    \middle/
+                        \Delta\mathbf{s}
+                    \right.
+            $$
+        </p>
+
+        <p>
+            Or in exact form:
+        </p>
+
+        <p>
+            $$
+                \mathbf{J_p} =
+
+            $$ 
+        </p>
+
+        <hr></hr>
+
+        <h2>
+            Cartesian Form of a Gerstner Wave (WIP)
+        </h2>
+
+        <p>
+            A Gerstner wave is effectively a curtate trochoid. A classic trochoid is defined by the following paramteric equation, where \(b\) controls the sharpness of the crest:
+        </p>
+
+        <p>
+            $$ \begin{aligned} x(t) &= a t - b \sin(t) \\ y(t) &= a - b \cos(t) \end{aligned} $$
+        </p>
+
+        <p>
+            For simplicity, we will use a unit radius \(a = 1\), giving:
+        </p>
+
+        <p>
+            $$ \begin{aligned} x(t) &= t - b \sin(t) \\ y(t) &= 1 - b \cos(t) \end{aligned} $$
+        </p>
+
+        <p>
+            For generating displacement vectors along a plane this form works fine. However for ray tracing we require a description of the trochoid in the Cartesian form \(f(t) = y\). To do this we should express \(x(t)\) in terms of \(t\) and substitute it into the equation for \(y(t)\). This can be done by finding the inverse \(x(t)^{-1}\):
+        </p>
+
+        <p>
+            $$ f(t) = 1 - b \cos(x(t)^{-1}) $$
+        </p>
+
+        <p>
+            Now, if you try to invert \(t - b \sin(t)\) you might find that it is not so easy. In fact, the inverse cannot be expressed analytically in terms of elementary functions. This makes the problem a little tricker, but fortunately we aren't the first to attempt to do such a thing. In fact, a certain Johannes Kepler derived such a function in 1609 under the study of orbital mechanics, commonly written as:
+        </p>
+
+        <p>
+            $$ M = E - e \sin(E) $$
+        </p>
+
+        <p>
+            Since then, mathematicians have been coming up with clever ways to solve Kepler's Equation for \(E\). A tried and true technique is to start with a rough initial guess and apply a number of Newton-Raphson iterations until we converge to a desired level of precision. For graphics purposes, the desired level of precision is quite low indeed. Empirically, I find as few as 2 iterations can be enough to produce a perceptually accurate Gerstner wave.
+        </p>
+
+        <p>
+            An initial guess
+        </p>
+
+        <h2>
+            Derivatives and Lipschitz Constants of a Gerstner Wave (WIP)
+        </h2>
+
+        <p>
+            Once we have an acceptable Cartesian approximation to the Gerstner wave, we can quite easily get its analytical derivatives at little extra cost. Use of the product rule tells us that:
+        </p>
+
+        <p>
+            $$ \begin{aligned} 
+                f'(t) 
+                &= \dfrac{d}{dt} 1 - b \cos(x(t)^{-1}) \\
+                &= x'(t)^{-1} \sin(x(t)^{-1}) \\ 
+            \end{aligned}  $$
+        </p>
+
+        <p>
+            We need to find the derivative of the inverse \(x'(t)^{-1}\). To do this we can use something called the inverse function rule, which states:
+        </p>
+
+        <p>
+            $$ f'(x)^{-1} = \dfrac{1}{f'(f(x)^{-1})} $$
+        </p>
+
+        <p>
+            Since \(x'(t) = \dfrac{d}{dt} t - b \sin(t) = 1 - b \cos(t)\):
+        </p>
+
+        <p>
+            $$ f'(t) = \dfrac{\sin(x(t)^{-1})}{ 1 - b \cos(x(t)^{-1})}  $$
+        </p>
+
+        <p>
+            So once we have 
+        </p>
+
+        <h2>
+            Directional Lipschitz Constant of a Height Function Along a Ray (WIP)
+        </h2>
+
+        <p>
+            Let \(f(\mathbf{q})\) be a height function defined over a plane at a position \(\mathbf{q}\). The 2D position \(\mathbf{q}\) is found by projecting the 3D position \(\mathbf{p}\) onto the plane. Given the plane's origin \(\mathbf{P_o}\) as well as its tangent \(\mathbf{P_T}\) and bitangent \(\mathbf{P_B}\) vectors, this is equivalent to:
+        </p>
+
+        <p>
+            $$ \mathbf{q}(\mathbf{p}) = \begin{bmatrix} \mathbf{P_T} \\ \mathbf{P_B} \end{bmatrix} (\mathbf{p} - \mathbf{P_o}) $$
+        </p>
+
+        <p>
+            With it's Jacobian \(\mathbf{J_q}\) given by:
+        </p>
+
+        <p>
+            $$ \mathbf{J_q}(\mathbf{p}) = \begin{bmatrix} \mathbf{P_T} \\ \mathbf{P_B} \end{bmatrix} $$
+        </p>
+
+        <p>
+            The composition of \(\mathbf{q}(\mathbf{p})\) with the ray equation \(\mathbf{\delta}(t) = \mathbf{r_o} + t \mathbf{r_d}\) gives us the 2D position on the plane as a function of \(t\):
+        </p>
+
+        <p>
+            $$ \mathbf{q} \circ \mathbf{\delta}(t) = \begin{bmatrix} \mathbf{P_T} \\ \mathbf{P_B} \end{bmatrix} (\mathbf{r_o} + t \mathbf{r_d} - \mathbf{P_o}) $$
+        </p>
+
+        <p>
+            Whose derivatives are given by:
+        </p>
+
+        <p>
+            $$ \begin{aligned} 
+                \mathbf{J_{q \circ \mathbf{\delta}}}(t)
+                &= \mathbf{J_q}(\mathbf{\delta}(t)) \mathbf{\delta}(t)' \\
+                &= \begin{bmatrix} \mathbf{P_T} \\ \mathbf{P_B} \end{bmatrix} \mathbf{r_d} \\
+            \end{aligned} $$
+        </p>
+
+        <p>
+            And its derivative is found by use of the chain rule:
+        </p>
+
+        <p>
+            $$ \begin{aligned} 
+                (\mathbf{q} \circ \mathbf{\delta}(t))'
+                &= \nabla \mathbf{q} \circ \mathbf{\delta}(t) \cdot \mathbf{\delta}(t)' \\
+                &= \begin{bmatrix} \mathbf{P_T} \\ \mathbf{P_B} \end{bmatrix} \mathbf{\delta}(t) \cdot \mathbf{r_d} \\
+                &= \begin{bmatrix} \mathbf{P_T} \\ \mathbf{P_B} \end{bmatrix} (\mathbf{r_o} + t \mathbf{r_d}) \cdot \mathbf{r_d} \\
+            \end{aligned} $$
+        </p>
+
+        <p>
+            Now we seek the derivative of the height along the ray, \((f \circ \mathbf{q})'\). By using the chain rule, and noting that matrix multiplication is distributive over addition:
+        </p>
+
+        <p>
+            $$ \begin{aligned} 
+                (f \circ \mathbf{q})' &= (f' \circ \mathbf{q}) \cdot \mathbf{q}' \\
+                &= \nabla f \circ q \cdot q' \\
+                &= \nabla f \circ q \cdot \nabla \begin{bmatrix} \vec{P_T} \\ \vec{P_B} \end{bmatrix} (\vec{r_o} + t \vec{r_d} - \vec{P_o}) \\
+                &= \nabla f \circ q \cdot \begin{bmatrix} \vec{P_T} \\ \vec{P_B} \end{bmatrix} r_d \\
+            \end{aligned} $$
+        </p>
+
+        <p>
+            In essence this tells us that given a global Lipschitz constant \(\lambda\) over a planar height field \(f(\vec{q})\), we can derive the Lipschitz constant of the height field along the ray by multiplying the constant with the dot product between the ray direction and the plane's normal.
+        </p>
+
+        <h2>
+            Upper Bounds for The Amplitude of an Octave of Gabor Ocean Noise (WIP)
+        </h2>
+
+        <h2>
+            Scattering Approximation (WIP)
+        </h2>
+
+        <p>
+            To simulate the effect of light penetrating the water surface and scattering towards the viewer, we will use the volume rendering equation. We'll have to make some rather broad assumptions and generalisations to approximate this behaviour as we don't want to run a full path-tracing simulation. The phenomenon we're interested in particular is in-scattering, which is described by the following equation:
+        </p>
+
+        <p>
+            $$ S(\mathbf{p}_0) = \int_0^a \exp(-\smallint_0^t \sigma_e(\mathbf{p}_s) \, ds)\sigma_s(\mathbf{p}_t) \int_{S^2} \phi(\mathbf{p}_t, \theta) L(\mathbf{p}_t, \omega) \, d\omega \, dt $$
+        </p>
+
+        <p>
+            Here, \(\mathbf{p}_t\) is a shorthand for the point along a ray given by the ray equation where \(\mathbf{p}_t = \mathbf{r_o} + t \mathbf{r_d}\). \(\sigma_e\) and \(\sigma_s\) are the extinction and scattering coefficients at a point on the ray, respectively. \(L\) represents the incoming light at \(\mathbf{p}_t\) from direction \(\omega\), and \(\phi\) is the phase function at \(\mathbf{p}_t\) where \(\theta\) is the angle between the ray direction and the incoming light direction. The outermost integral runs along the ray from the start of the volume at \(t=0\) to the end at \(t=b\). The last integral runs over all the directions over the sphere \(S^2\) at the current point. 
+        </p>
+
+        <p>
+            The first simplification we can make is to assume that our water volume is completely homogenous throughout such that the extinction and scattering coefficients reduce to constant terms, letting us pull them out of their respective integrals. This causes the integral inside the exponential to reduce to the current length along the ray \(t\):
+        </p>
+
+        <p>
+            $$ S(\mathbf{p}_0) = \sigma_s \int_0^a \exp(-\sigma_e t) \int_{S^2} \phi(\mathbf{p}_t, \theta) L(\mathbf{p}_t, \omega) \, d\omega \, dt $$
+        </p>
+
+        <p>
+            Next, we'll get rid of the inner integral by only considering the incoming light from the sun. The sun accounts for most of the incoming light so this makes for a reasonable approximation. Further, since our volume is homogenous, the phase function \(\phi\) is constant with respect to the position \(\mathbf{p}_t\). As we're only considering a single light direction, the angle \(\theta\) is also constant, meaning we can take the phase function entirely out of the integral.
+        </p>
+
+        <p>
+            $$ S(\mathbf{p}_0) = \phi(\theta) \sigma_s \int_0^a \exp(-\sigma_e t) L(\mathbf{p}_t, \omega) \, dt $$
+        </p>
+
+        <p>
+            The \(L(\mathbf{p}_t, \omega)\) term is in fact another integral, this time over the light path through the volume from the current point on the ray \(\mathbf{p}_t\) to the light's point of entry \(\mathbf{q_t}\), which itself is dependent on \(t\). Making this explicit:
+        </p>
+
+        <p>
+            $$ S(\mathbf{p}_0) = \phi(\theta) \sigma_s \int_0^a \exp(-\sigma_e t) \exp(-\sigma_e(|\mathbf{p}_t - \mathbf{q}_t)|) \, dt $$
+        </p>
+
+        <p>
+            We can once more pull another term out of the integral, this time by applying the mean value theorem for integrals, which states:
+        </p>
+
+        <p>
+            $$ \int_a^b f(x) g(x) \, dx = g(c) \int_a^b f(x) $$
+        </p>
+
+        <p>
+            Where \(g(c)\) takes on the average value of \(g(x)\) over \([a, b]\). So, if \(L(\mathbf{p}_c, \omega)\) gives us the mean value of \(L(\mathbf{p}_t, \omega)\), then:
+        </p>
+
+        <p>
+            $$ S(\mathbf{p}_0) = L(\mathbf{p}_c, \omega) \phi(\theta) \sigma_s \int_0^t \exp(-\sigma_e t) \, dt $$
+        </p>
+
+        <p>
+            Finally, we are left with a relatively simple integral to solve with a known analytic solution. The final equation is then:
+        </p>
+
+        <p>
+            $$ S(\mathbf{p}_0) = \dfrac{1}{\sigma_e} L(\mathbf{p}_c, \omega) \phi(\theta) \sigma_s (1 - \exp(-\sigma_e t)) $$
+        </p>
+        
+        <p>
+            This leaves us with two parameters which we must find in order to evaluate the approximate in-scattering at \(\mathbf{p}_0\); the total length of the ray through the water volume \(t\), and the average length of the light ray within the water volume \(L(\mathbf{p}_c, \omega)\). Without ray-marching we can only come up with an ad-hoc hueristic based on the eye and sun directions as well as the state of the ocean surface at the evaluation point.
+        </p>
+
+        <p>
+            If we model our ocean surface as a flat plane then these parameters can be easily derived. Assuming a constant ocean depth \(d\), the total ray length \(t\) follows from basic trigonometry:
+        </p>
+
+        <p>
+            $$ t = \dfrac{\cos{\theta}}{d}, \quad \cos{\theta} = \mathbf{P_n} \cdot \mathbf{r_d} $$
+        </p>
+
+        <p>
+            Where \(\mathbf{P_n}\) and \(\mathbf{r_d}\) are the normal to the ocean surface and the direction of the view ray, respectively. To find \(L(\mathbf{p}_c, \omega)\) we can use the cosine rule. Given the distance along the view ray inside the volume \(z\), the length of the light path through the volume is:
+        </p>
+
+        <p>
+            $$ l = z \sqrt{\dfrac{a^2 + t^2 - 2at \cos{\gamma}}{t^2} }, \quad \cos{\gamma} = \mathbf{\omega} \cdot \mathbf{r_d} $$
+        </p>
+
+        <p>
+            Then the mean is found by the following:
+        </p>
+
+        <p>
+            $$ 
+                \begin{aligned} 
+                    L(\mathbf{p}_c, \omega) 
+                        &= \dfrac{1}{t} \int_0^t z \sqrt{\dfrac{a^2 + t^2 - 2at \cos{\gamma}}{t^2} } \, dz \\
+                        &= \dfrac{t}{2} \sqrt{\dfrac{a^2 + t^2 - 2at \cos{\gamma}}{t^2}}
+                \end{aligned} 
+            $$
+        </p>
+
+        <h2>
+            Comparison with The State of The Art (WIP)
+        </h2>
+
+        <p>
+            One of the biggest advantages to the technique presented in this article is that the ocean parameters are entirely locally controlled, unlike FFT methods which require one set of parameters for the entire spectrum. For example, you could have a global wind map feeding in wind vectors to the ocean, or change the ocean spectrum depending on the distance to the shoreline, etc.
+        </p>
+
+    </body>
+
+</html>
