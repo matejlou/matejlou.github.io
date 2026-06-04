@@ -14,11 +14,11 @@
 
     <body>
         <header>
-
+            Ocean Simulation With Gabor Noise
         </header>
 
         <h1>
-            Ocean Simulation With Gabor Noise
+            
         </h1>
 
         <h2>
@@ -30,11 +30,11 @@
         </h2>
 
         <p>
-            The parameters defining a Gabor kernel have a direct correspondence to the parameters of a Gaussian in the spectral domain. First, let's take a look at the sinusoidal component. Consider a plane wave with frequency \(k\), phase \(\phi\), direction \(\mathbf{\omega}\) and amplitude \(A\):
+            The parameters defining a Gabor kernel have a direct correspondence to the parameters of a Gaussian in the spectral domain. First, let's take a look at the sinusoidal component. Consider a plane wave with wavevector \(\mathbf{k}\), phase \(\varphi\), and amplitude \(A\):
         </p>
 
         <p>
-            $$ f(\mathbf{x}; k, \phi, \mathbf{\omega}, A) = A \sin(k\mathbf{x} \cdot \mathbf{\omega} + \phi) $$
+            $$ f(\mathbf{x}; \mathbf{k}, \phi, A) = A \sin(\mathbf{k} \cdot \mathbf{x} + \varphi) $$
         </p>
 
         <p>
@@ -42,7 +42,7 @@
         </p>
 
         <p>
-            $$ |\mathcal{F}(f(\mathbf{x}))(\mathbf{\xi})| = A \delta(\mathbf{\xi} \pm k\mathbf{\omega}) $$
+            $$ |\mathcal{F}(f(\mathbf{x}))(\mathbf{\xi})| = A \delta(\mathbf{\xi} \pm \mathbf{k}) $$
         </p>
 
         <p>
@@ -66,7 +66,7 @@
         </p>
 
         <p>
-            $$ \hat{G}(\mathbf{\xi}; k, \phi, \mathbf{\omega}, A, \mathbf{\Sigma}) = \dfrac{A\pi}{\sqrt{|\mathbf{\Sigma}^{-1}|}} \exp(-\dfrac{1}{4} (\mathbf{\xi} \pm k\mathbf{\omega})^{\top}\mathbf{\Sigma}(\mathbf{\xi} \pm k\mathbf{\omega})) $$
+            $$ \hat{G}(\mathbf{\xi}; \mathbf{k}, \phi, A, \mathbf{\Sigma}) = \dfrac{A\pi}{\sqrt{|\mathbf{\Sigma}^{-1}|}} \exp(-\dfrac{1}{4} (\mathbf{\xi} \pm \mathbf{k})^{\top}\mathbf{\Sigma}(\mathbf{\xi} \pm \mathbf{k})) $$
         </p>
 
         <p>
@@ -75,16 +75,19 @@
 
         <p>
             $$ 
-                k = |\mathbf{\hat{\mu}}|, \quad 
-                \mathbf{\omega} = \dfrac{\mathbf{\hat{\mu}}}{|\mathbf{\hat{\mu}}|}, \quad 
+                \mathbf{k} = \mathbf{\hat{\mu}}, \quad 
                 A = \dfrac{\hat{A} \sqrt{|\hat{\mathbf{\Sigma}}^{-1}}|}{\pi}, \quad 
                 \mathbf{\Sigma} = 4 \hat{\mathbf{\Sigma}}^{-1} 
             $$
         </p>
 
-        <h2>
+        <h3>
+            Sparse Convolution (WIP)
+        </h3>
+
+        <h3>
             Optimising Gabor Noise (WIP)
-        </h2>
+        </h3>
 
         <h2>
             Simulating Wave Spectra (WIP)
@@ -107,15 +110,15 @@
         </p>
 
         <p>
-            We can reframe this as a sampling problem. We want to reconstruct the spectral profile by taking the sum of \(N\) discrete samples (bands) at sample points (frequencies) \(x_n\) using a Gaussian kernel \(f(x)\) of width (bandwidth) \(b_n\). Formally:
+            We can reframe this as a sampling problem. We want to reconstruct the spectral profile by taking the sum of \(N\) discrete samples (bands) at sample points (frequencies) \(x_n\) using a Gaussian kernel \(f(x)\) of width (bandwidth) \(B_n\). Formally:
         </p>
 
         <p>
-            $$ s(k) \approx \sum_{n=0}^{N-1} f(\dfrac{x_n - k}{b_n})s(x_n) $$
+            $$ s(k) \approx \sum_{n=0}^{N-1} f(\dfrac{x_n - k}{B_n})s(x_n) $$
         </p>
 
         <p>
-            If our spectral profile \(s(k)\) is unchanging, then we could formulate this as a minimisation problem to find the optimal \(k_n\), \(b_n\) for some fixed \(N\). However, a more generic approach is preferred as it allows for real-time flexibility. The simplest solution is just to sample \(s(k)\) at fixed intervals of equal bandwidth, effectively resulting in a Gaussian smoothing of the original profile.
+            If our spectral profile \(s(k)\) is unchanging, then we could formulate this as a minimisation problem to find the optimal \(k_n\), \(B_n\) for some fixed \(N\). However, a more generic approach is preferred as it allows for real-time flexibility. The simplest solution is just to sample \(s(k)\) at fixed intervals of equal bandwidth, effectively resulting in a Gaussian smoothing of the original profile.
         </p>
 
         <p> 
@@ -131,7 +134,7 @@
         </p>
 
         <p>
-            Fortunately, wave spectra share similar characteristics that we can exploit to our advantage. Spectra are characterised by a sharp low-frequency peak with a gradual falloff as the frequency increases. This suggests that samples should be concentrated around the peak frequency, spreading out as we sample the higher frequencies. By increasing the sample distance \(h\) in proportion to the bandwidth we can efficiently cover the whole spectrum with much fewer samples. For a given spectral profile \(s(k)\) we need to determine the peak frequency \(f_0\), which we will refer to as the fundamendal, as well as the full width at half maximum (FWHM) \(\gamma\). The first sample can then be placed at the fundamental with the sample distance following an increasing geometric series, while the FWHM determines the initial bandwidth.
+            Fortunately, wave spectra share similar characteristics that we can exploit to our advantage. Spectra are characterised by a sharp low-frequency peak with a gradual falloff as the frequency increases. This suggests that samples should be concentrated around the peak frequency, spreading out as we sample the higher frequencies. By increasing the sample distance \(h\) in proportion to the bandwidth we can efficiently cover the whole spectrum with much fewer samples. For a given spectral profile \(s(k)\) we need to determine the peak frequency \(f_0\).The first sample can then be placed at \(f_0\) with the bandwidth following an increasing geometric series.
         </p>
 
         <p>
@@ -139,7 +142,7 @@
         </p>
 
         <p>
-            The bandwidth of the first sample should be just big enough to approximately cover the lower tail of the spectrum. To do this, we can use the full width at half maximum (FWHM) of the peak. Finding the FWHM for arbtitrary spectra can be difficult however as an analytic solution is not always guaranteed to exist. Instead we can use a local 2nd-order Taylor approximation at the peak, resulting in a quadratic whose FWHM can be easily derived.
+            The bandwidth of the first sample should be just big enough to approximately cover the lower tail of the spectrum. To do this, we can use the full width at half maximum (FWHM) of the lower half of the peak. Finding the FWHM for arbtitrary spectra can be difficult however as an analytic solution is not always guaranteed to exist. Instead we use a 2nd-order Taylor approximation at the peak, resulting in a quadratic whose FWHM can be easily derived.
         </p>
 
         <p>
@@ -195,23 +198,23 @@
         </p>
 
         <p>
-            We define the sample distance \(h\) as a function of the bandwidth. This is useful in general especially when attempting to produce periodic noise, where the resolution of the lattice grid and consequently the width of the spatial kernel is limited to a unit fraction of the texture size. Note that in this case we cannot use the FWHM to set the starting bandwidth, as the bandwidth must be quantised. Instead a sufficiently narrow bandwidth will suffice.
+            We define the sample distance \(h\) as a function of the bandwidth. This is useful in general especially when attempting to produce periodic noise, where the resolution of the lattice grid and consequently the width of the spatial kernel is limited to a unit fraction of the texture size.
         </p>
 
         <p>
-            A suitable metric for determining the distance \(h\) between two samples is to place them such that they sum to 1 at their intersection, or equivalently, \(h = \dfrac{\gamma_0 + \gamma_1}{2}\) where \(\gamma\) is the full width at half maximim (FWHM) of each Gaussian. For a Gaussian with bandwidth \(b\).
+            A suitable metric for determining the distance \(h\) between two samples is to place them such that they sum to 1 at their intersection, or equivalently:
         </p>
 
         <p>
-            $$ h_n = \dfrac{\gamma_n + \gamma_{n-1}}{2}, \quad \gamma_n = 2 \sqrt{\dfrac{\ln{2}}{b_n}} $$
+            $$ h_n = \dfrac{B_n + B_{n-1}}{2} $$
         </p>
 
         <p>
-            $$ h_n = (\sqrt{b_n} + \sqrt{b_{n-1}}) \sqrt{\ln{2}} $$
+            Where \(B_n\) is the bandwidth (or FWHM) of the \(n\)th Gaussian sample.
         </p>
 
         <p>
-            The fundamental of a spectral profile is found where \(s'(f_0) = 0\). The FWHM is trickier to express analytically for most wave spectra. Instead we can use a quadratic Taylor approximation at the fundamental, which has a simple closed-form expression for the FWHM.
+            The fundamental of a spectral profile is found where \(s'(f_0) = 0\).
         </p>
 
         <h3>
@@ -219,19 +222,27 @@
         </h3>
 
         <p>
-            So far we have ignored the directional component of the ocean spectrum. This is largely because it is seperable from the isotropic component, and thus we can use alternative sampling strategies to shape it. A lot of literature on ocean simulation for graphics applications only touches very briefly on this aspect of the ocean spectrum, and most solutions simply include an extra factor accounting for the dot product between the primary direction and the wave angle.
+            So far we have ignored the directional component of the ocean spectrum. This is largely because it is seperable from the isotropic component, and thus we can use alternative sampling strategies to shape it. A directional spectral profile often used ocean optics is the <i>cosine 2s spreading function</i>. It is defined as: 
         </p>
 
         <p>
-            This dot product factor produces a cosine distribution, which is in fact not too far off from a common directional spectral profile often cited in ocean optics, the <i>cosine 2s spreading function</i>. It is defined as: 
+            $$ 
+                D(\theta) = \dfrac{1}{\kappa} \cos(\omega - \theta)^{2s}, 
+                \quad -\dfrac{\pi}{2} \le \omega - \theta \le \dfrac{\pi}{2} 
+                \quad \kappa = \int_{-\pi/2}^{\pi/2} \cos(\theta)^{2s} \,d\theta
+            $$
         </p>
 
         <p>
-            $$d(\theta) = \cos(\omega - \theta)^{2s}, \quad -\dfrac{\pi}{2} \le \omega - \theta \le \dfrac{\pi}{2} $$
+            Where \(s\) is a sharpness parameter controlling the spread of the distribution. The normalisation constant \( \dfrac{1}{\kappa} \) has an analytical expression in terms of the gamma function, but it can be more easily approximated by taking the area of a box whose width is the FWHM or bandwidth \(\beta\) of the spreading function:
         </p>
 
         <p>
-            If we take a cross-section of an isotropic Gaussian along circular arc in the frequency domain, we see that it too follows a very similar cosine-shaped profile.
+            $$ \kappa \approx \beta, \quad \beta = 2 \arccos(2^{-1/2s}) $$
+        </p>
+
+        <p>
+            If we take the cross-section of a Gaussian along circular arc in the frequency domain, we see that it follows a similarly-shaped profile.
         </p>
 
         <p>
@@ -239,7 +250,23 @@
         </p>
 
         <p>
-            
+            We'll follow the same idea as in the isotropic spectra and attempt to approximate the directional spread by altering the bandwidth of the Gaussian perpendicular to the main axis. The bandwidth \(B\) of the spreading function in cartesian coordinates is:
+        </p>
+
+        <p>
+            $$ B = 2k \cos(\dfrac{\beta}{2}) = \dfrac{2k}{2^{1/2s}} $$
+        </p>
+
+        <p>
+            Where \(k\) is the wavenumber of the Gaussian in frequency-space.
+        </p>
+
+        <p>
+
+        </p>
+
+        <p>
+            Another strategy is to randomly perturb the direction of each kernel's wavevector \(\mathbf{k}\) to match the distribution of the spreading function. For simplicity we'll consider only isotropic Gaussians.
         </p>
 
         <p>
@@ -254,14 +281,26 @@
             It is not uncommon to see two peaks in ocean spectra, corresponding to waves produced by wind and as well as swell. A second peak can be simulated by adding another band of noise. The principal direction of each peak is often uncorrelated.
         </p>
 
-        <hr></hr>
+        <h3>
+            Wave Frequency and the Dispersion Relation
+        </h3>
 
         <p>
-            Given the magnitude of a frequency-domain Gaussian sample at \(\hat{A}\), we know that the corresponding spatial-domain amplitude is \(\dfrac{\hat{A} \sqrt{|\hat{\mathbf{\Sigma}}^{-1}}|}{\pi}\). As we are only sampling isotropic Gaussians, the covariance matrix \(\mathbf{\Sigma}\) can be expressed as a scaled identity matrix \(b\mathbf{I}\), where \(b\) is the bandwidth of the Gaussian in the frequency domain. Knowing this, the spatial-domain amplitude simplifies to:
+            Most oceanographic spectra describe waves in terms of their <i>angular frequency</i>, that is the number of cycles per unit time. However, we want waves in terms of their spatial frequency or <i>wavenumber</i>. As such we need to be able to convert from one to the other.
         </p>
 
         <p>
-            $$ A = \dfrac{\hat{A}}{b \pi} $$ 
+            Dispersion relation...
+        </p>
+
+        <hr></hr>
+
+        <p>
+            Given the magnitude of a frequency-domain Gaussian sample at \(\hat{A}\), we know that the corresponding spatial-domain amplitude is \(\dfrac{\hat{A} \sqrt{|\hat{\mathbf{\Sigma}}^{-1}}|}{\pi}\). As we are only sampling isotropic Gaussians, the covariance matrix \(\mathbf{\Sigma}\) can be expressed as a scaled identity matrix \(\sigma^2\mathbf{I}\), where \(\sigma\) is the standard deviation of the Gaussian in the frequency domain. Knowing this, the spatial-domain amplitude simplifies to:
+        </p>
+
+        <p>
+            $$ A = \dfrac{\hat{A} \sigma^2}{\pi} $$ 
         </p>
 
         <h2>

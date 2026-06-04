@@ -1,0 +1,163 @@
+<!doctype html>
+
+<html lang="en">
+    <head>
+        <title> Site Name. </title>
+        <link rel="stylesheet" href="/styles.css">
+        <link rel="stylesheet" href="/resources/dark.min.css">
+        <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+        <script src="/resources/highlight.min.js"></script>
+        <script src="/resources/hlsl.min.js"
+    ></script>
+        <script>hljs.highlightAll();</script>
+    </head>
+
+    <body>
+        <header>
+
+        </header>
+
+        <h1>
+            Analytic Single Scattering
+        </h1>
+
+        <p>
+            The equation that describes the physics of atmospheric scattering is given by:
+        </p>
+
+        <p>
+            $$ 
+                S(\mathbf{a}, \mathbf{b}) = 
+                    \int_{\mathbf{a}}^{\mathbf{b}} 
+                        T(\mathbf{a}, \mathbf{t}) 
+                            \int_{\mathbb{S}^2}
+                                \phi(\theta) \cdot L(\mathbf{t}, \omega)
+                            \, d\omega
+                    \, d\mathbf{t} 
+            $$
+        </p>
+
+        <p>
+            Let's break this down. The limits of the outer integral \(\mathbf{a}\) and \(\mathbf{b}\) are the start and end points of the view ray through the atmosphere, respectively. The integrand is evaluated along this ray at position \(\mathbf{t}\). The function \(T\) gives us the fraction of light transmitted between two points on the ray. It follows the Beer-Lambert law and is defined as:
+        </p>
+
+        <p>
+            $$ T(\mathbf{a}, \mathbf{b}) = e^{-\int_{\mathbf{a}}^{\mathbf{b}} \rho(\mathbf{t}) \, d\mathbf{t}} $$
+        </p>
+
+        <p>
+            Where \(\rho(\mathbf{t})\) is the atmospheric density at \(\mathbf{t}\). Let's park this for now and return to the main equation. The inner integral runs over \(\mathbb{S}^2\) or a sphere of all directions \(\omega\). The \(\phi\) term is called the phase function and tells us how much light is scattered towards us depending on the angle between the view ray and the light ray \(\theta\). Finally, \(L\) is the total light energy reaching the point \(\mathbf{t}\) from direction \(\omega\), which itself is defined as:
+        </p>
+
+        <p>
+            $$ L(\mathbf{t}, \omega) = \beta \cdot \rho(\mathbf{t}) \cdot T(\mathbf{t}, \mathbf{s}(\omega)) $$
+        </p>
+
+        <p>
+            The \(T\) term appears once again, this time giving us the transmittance between the point on the ray \(\mathbf{t}\) and the location of the light source \(\mathbf{s}\) in direction \(\omega\). The new term \(\beta\) is the scattering equation which tells the proportion of light of different wavelengths which are lost due to scattering, which is augmented by the density \(\rho\) at point \(\mathbf{t}\).
+        </p>
+
+        <p>
+            As you can see we're dealing with a very hairy equation as it is, involving double and triple integrals. Fortunately we can make a series of simplifying assumptions and approximations that will make this vastly easier to deal with. First, we'll get rid of the inner integral over the sphere \(\mathbb{S}^2\) by considering only the incoming light from the sun. We'll expand the \(L\) term to make things more explicit, yielding:
+        </p>
+
+        <p>
+            $$ 
+                S(\mathbf{a}, \mathbf{b}) = 
+                    \int_{\mathbf{a}}^{\mathbf{b}} 
+                        T(\mathbf{a}, \mathbf{t}) \cdot \phi(\theta) \cdot \beta \cdot \rho(\mathbf{t}) \cdot T(\mathbf{t}, \mathbf{s})
+                    \, d\mathbf{t} 
+            $$
+        </p>
+
+        <p>
+            Where \(\mathbf{s}\) is now simply the sun's position in space. Another simplification we can make is to assume that the rays from the sun are approximately parallel by the time they reach the atmosphere. This makes the phase function \(\phi\) constant along the view ray, allowing us to pull it out of the main integral. Since \(\beta\) is a constant, we can pull that out of the main integral as well.
+        </p>
+
+        <p>
+            $$ 
+                S(\mathbf{a}, \mathbf{b}) = 
+                    \beta \cdot \phi(\theta) \int_{\mathbf{a}}^{\mathbf{b}} 
+                        T(\mathbf{a}, \mathbf{t}) \cdot \rho(\mathbf{t}) \cdot T(\mathbf{t}, \mathbf{s})
+                    \, d\mathbf{t} 
+            $$
+        </p>
+
+        <p>
+            Let's expand out the \(T\) terms to show the full transmittance equation. This becomes:
+        </p>
+
+        <p>
+            $$ 
+                S(\mathbf{a}, \mathbf{b}) = 
+                    \beta \cdot \phi(\theta) \int_{\mathbf{a}}^{\mathbf{b}} 
+                        e^{-\int_{\mathbf{a}}^{\mathbf{t}} \rho(\mathbf{u}) \, d\mathbf{u}} 
+                            \cdot 
+                        \rho(\mathbf{t})
+                            \cdot 
+                        e^{-\int_{\mathbf{t}}^{\mathbf{s}} \rho(\mathbf{u}) \, d\mathbf{u}}
+                    \, d\mathbf{t} 
+            $$
+        </p>
+
+        <p>
+            Next we will parameterise the view ray to make the entire integral depending on a single scalar \(t\). The ray equation gives us a point on the ray \(\mathbf{\delta}(t)\) with respect to the ray origin \(\mathbf{r_o}\) and direction \(\mathbf{r_d}\):
+        </p>
+
+        <p>
+            $$ \mathbf{\delta}(t) = \mathbf{r_o} + t \mathbf{r_d} $$
+        </p>
+
+        <p>
+            The square of the distance from a point \(\mathbf{p}\) to a point on the ray \(\mathbf{\delta}(t)\) is given by the following quadratic in \(t\):
+        </p>
+
+        <p>
+            $$ d^2(t, \mathbf{p}) = at^2 + 2bt + c $$
+        </p>
+
+        <p>
+            Where:
+        </p>
+
+        <p>
+            $$
+                a = \mathbf{r_d} \cdot \mathbf{r_d}, 
+                \quad b = (\mathbf{r_o} - p) \cdot (\mathbf{r_o} - p), 
+                \quad c = \mathbf{r_d} \cdot (\mathbf{r_o} - p)
+            $$
+        </p>
+
+        <p>
+            Now let's explore the density function \(\rho(\mathbf{t})\). In the case of the atmosphere this can be defined as a monotonically decreasing function with respect to the height above the surface of a sphere. The square of the signed distance to an arbitrary sphere with centre \(\mathbf{c}\) and radius \(r\) is given by:
+        </p>
+
+        <p>
+            $$ d = d^2(t, \mathbf{c}) - r^2 $$
+        </p>
+
+        <p>
+            Which remains a quadratic in \(t\). So the density at a point \(t\) along the ray is the result of the composition \(\rho(d^2(t))\). The ease of evaluating the integral \(S\) depends on the defenition of \(\rho\). An ideal situation is where \(\rho\) is an even polynomial function of the lowest possible order. Polynomials are trivial to integrate and are closed under composition, and including only even terms ensures we don't need to deal with any square roots.
+        </p>
+
+        <p>
+            So we can rewrite the integral as:
+        </p>
+
+        <p>
+            $$ 
+                S(0, x) = 
+                    \beta \cdot \phi(\theta) \int_{0}^{x} 
+                        T(0, t) \cdot \rho(t) \cdot T(t, s)
+                    \, dt
+            $$
+        </p>
+
+        
+
+        <p>
+
+        </p>
+        
+    </body>
+</html>
