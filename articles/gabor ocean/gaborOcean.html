@@ -2,7 +2,7 @@
 
 <html lang="en">
     <head>
-        <title> Site Name. </title>
+        <title> Ocean Simulation With Gabor Noise </title>
         <link rel="stylesheet" href="/styles.css">
         <link rel="stylesheet" href="/resources/dark.min.css">
         <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
@@ -14,20 +14,180 @@
 
     <body>
         <header>
-            Ocean Simulation With Gabor Noise
+            
         </header>
 
         <h1>
-            
+            Ocean Simulation With Gabor Noise
         </h1>
 
-        <h2>
+        <ul>
+            <li><a href="#Introduction">A Gentle Introduction To Gabor Noise</a></li>
+            <ul>
+                <li><a href="#Noise and The Frequency Spectrum">Noise and The Frequency Spectrum</a></li>
+                <li><a href="#Sparse Convolution">Sparse Convolution</a></li>
+                <li><a href="#Optimising Gabor Noise">Optimising Gabor Noise</a></li>
+            </ul>
+
+            <li><a href="#Maths">Getting Dirty with the Details</a></li>
+            <ul>
+                <li><a href="#The Unique Spectral Properties of Gabor Kernels">The Unique Spectral Properties of Gabor Kernels</a></li>
+                <ul>
+                    <li><a href="#Classic Gabor">Classic Gabor</a></li>
+                    <li><a href="#The Window Function">The Window Function</a></li>
+                </ul>
+                <li><a href="#Simulating Ocean Spectra">Simulating Ocean Spectra</a></li>
+                <ul>
+                    <li><a href="#Spectral Sampling">Spectral Sampling</a></li>
+                    <li><a href="#Directional Spreading">Directional Spreading</a></li>
+                    <li><a href="#Ocean Swell">Ocean Swell</a></li>
+                </ul>
+            </ul>
+
+            <li><a href="#Ray Tracing">Ray Tracing a Gabor Ocean</a></li>
+            <ul>
+                <li><a href="#Cartesian Form of a Gerstner Wave">Cartesian Form of a Gerstner Wave</a></li>
+                <li><a href="#Analytical Derivatives">Analytical Derivatives</a></li>
+                <li><a href="#Anisotropic Filtering">Anisotropic Filtering</a></li>
+
+                <li><a href="#The Lipschitz Constant">The Lipschitz Constant</a></li>
+                <ul>
+                    <li><a href="#Lipschitz Constant of a Gerstner Wave">Lipschitz Constant of a Gerstner Wave</a></li>
+                    <li><a href="#Lipschitz Constant of a Height Field">Lipschitz Constant of a Height Field</a></li>
+                </ul>
+                <li><a href="#Adaptive Sphere Tracing">Adaptive Sphere Tracing</a></li>
+            </ul>
+
+            <li><a href="#Rendering">Rendering The Ocean</a></li>
+        </ul>
+
+        <h1 id="Introduction">
+            A Gentle Introduction To Gabor Noise
+        </h1>
+
+        <h2 id="Noise and The Frequency Spectrum">
             Noise and The Frequency Spectrum (WIP)
         </h2>
 
-        <h2>
-            The Unique Spectral Properties of Gabor Kernels (WIP)
+        <p>
+            A common way to analyse the properties of different types of noise and of images in general is to look at its Fourier transform. The Fourier transform takes in an input signal and reveals the frequencies present within the signal by decomposing it into sine and cosine pairs. This makes it easier to quantify various properties of different noises.
+        </p>
+
+        <p>
+            FIGURE.
+        </p>
+
+        <p>
+            Specifically, we look at the power spectrum or the squared magnitude of the complex sinusoid resulting from the Fourier transform. In two dimensions this can be represented as a polar graph where the coordinates \((r, \theta)\) represent the frequency and direction of the corresponding 2D plane wave, respectively.
+        </p>
+
+        <p>
+            FIGURE.
+        </p>
+
+        <p>
+            Gabor noise is unique in that it allows for precise control over the power spectrum of the resulting noise. The fundamental primitive of Gabor noise is the Gabor kernel, a function whose parameters have a direct correspondence to the shape of the kernel in the frequency domain.
+        </p>
+
+        <p>
+            FIGURE.
+        </p>
+
+        <p> 
+            This suggests that, given the power spectrum of some exemplar texture, we can reproduce variations of that texture simply by generating Gabor noise with the appropriate parameters. Determining these parameters has been the subject of many papers within the field.
+        </p>
+
+        <h2 id="Sparse Convolution">
+            Sparse Convolution
         </h2>
+
+        <p>
+            Gabor noise is really an extension to a technique sometimes referred to as sparse convolution. To explain sparse convolution we first need to take a look at plain old white noise. The Fourier transform of white noise is simply just white noise again. This makes sense since white noise by definition contains all frequencies.
+        </p>
+
+        <p>
+            FIGURE.
+        </p>
+
+        <p>
+            Now consider convolving white noise with an arbitrary signal. Since convolution in the spatial domain is equivalent to multiplication in the frequency domain, the result is the Fourier transform of the signal multiplied by white noise.
+        </p>
+
+        <p>
+            FIGURE.
+        </p>
+
+        <p>
+            Sparse convolution aims to exploit this behaviour by convolving the signal with a small number of discrete samples. The samples' values and locations are randomly distributed such that as the number of samples increases the result converges towards regular white noise. It turns out that it doesn't take too many samples to acceptably approximate white noise.
+        </p>
+
+        <p>
+            FIGURE.
+        </p>
+
+        <p>
+            This is a nice property as it allows us to directly control the frequency content of procedural noise while remaining entirely in the spatial domain. We can achieve sparse convolution by summing up copies of our input signal distributed randomly in space with varying amplitudes.
+        </p>
+
+        <p>
+            FIGURE.
+        </p>
+
+        <p>
+            Now back to Gabor noise. Recall that all the parameters defining a Gabor kernel have a direct correspondence to its appearance in the frequency domain. By taking Gabor kernels as our input signal during sparse convolution, we can in theory produce arbitrary textures with complete control over their spectral content.
+        </p>
+
+        <p>
+            FIGURE.
+        </p>
+
+        <h2 id="Optimising Gabor Noise">
+            Optimising Gabor Noise (WIP)
+        </h2>
+
+        <p>
+            If we were to implement Gabor noise via sparse convolution as-is the resulting algorithm would have a complexity of \(O(NM)\), where \(N\) and \(M\) are the number of pixels and the number of kernel samples evaluated, respectively. Note however that the Gaussian window approaches zero quickly such that its contribution to pixels that lie beyond a few standard deviations of its mean becomes neglibable. Instead we can truncate the Gaussian past a certain distance, or even better, choose a different window altogether that approximates a Gaussian but has finite support.
+        </p>
+
+        <p>
+            FIGURE.
+        </p>
+
+        <p>
+            For a given effective kernel radius \(r\), we can stratify the domain into cells of size \(r \times r\), and instead evaluate the \(3 \times 3\) grid of cells around a given pixel. This reduces the complexity to \(O(9N)\).
+        </p>
+
+        <p>
+            FIGURE.
+        </p>
+
+        <p>
+            We can optimise this even more if we fix the windows on a lattice and instead randomise the phase of the Gabor kernel to break up the regularity of the lattice. Then we only need to evaluate \(2 \times 2\) lattice points per pixel, just as we do with Perlin noise. 
+        </p>
+
+        <p>
+            FIGURE.
+        </p>
+
+        <p>
+            Finally, we can take this one step further by borrowing from Simplex noise and stratifying the domain into simplices such that each pixel only needs to evaluate its \(3\) local lattice points. The simplical grid also helps reduce rectilinear artifacts.
+        </p>
+
+        <p>
+            FIGURE.
+        </p>
+
+        <h1 id="Maths">
+            Getting Dirty with the Details
+        </h1>
+
+        <h2 id="The Unique Spectral Properties of Gabor Kernels">
+            The Unique Spectral Properties of Gabor Kernels
+        </h2>
+
+        <h1 id="Classic Gabor">
+            Classic Gabor
+        </h1>
 
         <p>
             The parameters defining a Gabor kernel have a direct correspondence to the parameters of a Gaussian in the spectral domain. First, let's take a look at the sinusoidal component. Consider a plane wave with wavevector \(\mathbf{k}\), phase \(\varphi\), and amplitude \(A\):
@@ -81,17 +241,77 @@
             $$
         </p>
 
-        <h3>
-            Sparse Convolution (WIP)
+        <h3 id="The Window Function">
+            The Window Function
         </h3>
 
-        <h3>
-            Optimising Gabor Noise (WIP)
-        </h3>
+        <p>
+            As mentioned earlier we'd like to replace the Gaussian window with a different window that has finite support and which closely approximates the frequency response of a Gaussian. A good candidate would be the <a href="https://en.wikipedia.org/wiki/Kaiser_window">Kaiser window</a>. However, the window is not simple to evaluate as it involves non-elementary functions. Instead I propose a window with similar properties but which is far simpler to evaluate. It is derived from the limit definition of the exponential function:
+        </p>
 
-        <h2>
+        <p>
+            $$ e^{x} = \lim_{\alpha \to \infty} \left(1 + \dfrac{x}{\alpha}\right)^{\alpha} $$
+        </p>
+
+        <p>
+            From this we can express a Gaussian in the form \(e^{-ax^2}\) as the following limit:
+        </p>
+
+        <p>
+            $$ e^{-ax^2} = \lim_{\alpha \to \infty} (1 - x^2)^{\alpha} $$
+        </p>
+
+        <p>
+            Thus we have a window defined as:
+        </p>
+
+        <p>
+            $$ w(x) = (1 - x^2)^{\alpha}, \quad -1 \lt x \le 1 $$
+        </p>
+
+        <p>
+            If \(\alpha\) is an integer, then the window can be evaluated using only a handful of multiply and add instructions. In practice a value of \(\alpha = 3\) produces visually accurate results, and has the necessary \(C^2\) continuity to prevent artifacts in reflections when rendering the surface.
+        </p>
+
+        <p>
+            The \(I\) term is a normalisation constant that ensures the total area under the window is equal to one. It is defined as:
+        </p>
+
+        <p>
+            $$ I = \int_{\mathbb{R}} w(\mathbf{x}) \, d\mathbf{x} $$
+        </p>
+
+        <p>
+            In \(\mathbb{R}^2\), the integral has a simple form:
+        </p>
+
+        <p>
+            $$ I = \int_{\mathbb{R}^2} w(\mathbf{x}) \, d\mathbf{x} = 2\pi \int_0^1 x(1 - x^2)^{\alpha} \, dx = \dfrac{\pi}{\alpha + 1} $$
+        </p>
+
+        <p>
+            Care needs to be taken when altering the window of the Gabor kernel to ensure that the conversion of parameters from the frquency domain to the spatial domain and vice versa remains correct. In general, for a windowing function \(w(x)\) the amplitude of the frequency response is equal to the integral of the window over the entire domain:
+        </p>
+
+        <p>
+            $$ \hat{A} = \int_{\mathbb{R}^2} w(\mathbf{x})\, d\mathbf{x} $$
+        </p>
+
+        <p>
+            The scaling property of the Fourier transform tells us how the frequency response changes when the window is scaled. For a positive scaling matrix \(\mathbf{S}\), the frequency response is:
+        </p>
+
+        <p>
+            $$ \dfrac{1}{|\mathbf{S}|} \hat{w}(\mathbf{S}^{-1}\xi) $$
+        </p>
+
+        <h2 id="Simulating Wave Spectra">
             Simulating Wave Spectra (WIP)
         </h2>
+
+        <h3 id="Spectral Sampling">
+            Spectral Sampling
+        </h3>
 
         <p>
             A common technique in ocean simulation is to take a parameterised description of the ocean in the frequency domain and transform it to the spatial domain via the discrete Fourier transform. The power of Gabor noise however is that it gives us precise control of our noise's spectral content while remaining entirely in the spatial domain. Recall that the bandwidth of a Gabor kernel is inversely proportional to the spatial width of its window. When generating Gabor noise on a fixed lattice, all windows have the same width. This means that the final generated noise is band-limited. 
@@ -217,7 +437,7 @@
             The fundamental of a spectral profile is found where \(s'(f_0) = 0\).
         </p>
 
-        <h3>
+        <h3 id="Directional Spreading">
             Directional Spreading
         </h3>
 
@@ -234,7 +454,7 @@
         </p>
 
         <p>
-            Where \(s\) is a sharpness parameter controlling the spread of the distribution. The normalisation constant \( \dfrac{1}{\kappa} \) has an analytical expression in terms of the gamma function, but it can be more easily approximated by taking the area of a box whose width is the FWHM or bandwidth \(\beta\) of the spreading function:
+            Where \(s\) is a sharpness parameter controlling the spread of the distribution. The normalisation constant \( \dfrac{1}{\kappa} \) has an analytical expression in terms of the gamma function, but it can be more easily approximated by taking the area of a box whose width is the angular bandwidth \(\beta\) of the spreading function:
         </p>
 
         <p>
@@ -242,38 +462,34 @@
         </p>
 
         <p>
-            If we take the cross-section of a Gaussian along circular arc in the frequency domain, we see that it follows a similarly-shaped profile.
+            One method to approximate the directional spread is by altering the shape of the Gaussian perpendicular to the main axis. We'll do this by projecting the angular bandwidth \(\beta\) of the directional distribution onto a plane at the origin perpendicular to the wavevector \(\mathbf{k}\). This is achieved using basic trigonometry:
         </p>
 
         <p>
-            FIGURE.
+            $$ B = 2k \sin(\dfrac{\beta}{2}) = 2k \sqrt{1 - 2^{-1/s}}, \quad k = |\mathbf{k}| $$
         </p>
 
         <p>
-            We'll follow the same idea as in the isotropic spectra and attempt to approximate the directional spread by altering the bandwidth of the Gaussian perpendicular to the main axis. The bandwidth \(B\) of the spreading function in cartesian coordinates is:
+            Another strategy is to randomly perturb the direction of each kernel's wavevector \(\mathbf{k}\) to match the distribution of the spreading function. For a given directional distribution \(D(\theta)\), we can approximate it with a Gaussian distribution over \(\theta\). The standard deviation \(\sigma_D\) of this Gaussian is derived from the angular bandwidth \(\beta\):
         </p>
 
         <p>
-            $$ B = 2k \cos(\dfrac{\beta}{2}) = \dfrac{2k}{2^{1/2s}} $$
+            $$ \sigma_D = \dfrac{\beta}{2\sqrt{2\ln{2}}} $$
         </p>
 
         <p>
-            Where \(k\) is the wavenumber of the Gaussian in frequency-space.
+            We can perturb each wavevector by a random Gaussian-distributed angular offset with zero mean and variance \(\sigma_k^2\). The combined standard deviation of the perturbed Gaussians is related to the bandwidth \(B_n\) of each Gaussian by:
         </p>
 
         <p>
-
-        </p>
-
-        <p>
-            Another strategy is to randomly perturb the direction of each kernel's wavevector \(\mathbf{k}\) to match the distribution of the spreading function. For simplicity we'll consider only isotropic Gaussians.
+            $$ \sigma_D = \sigma_k + \dfrac{1}{2N\sqrt{2\ln{2}}} \sum_{n=0}^{N-1} 4\arcsin(\dfrac{B_n}{4k}) $$
         </p>
 
         <p>
             Another important detail in simulating accurate oceans is taking into account how the spreading function varies with the frequency of the wave. Lower frequency waves exhibit a narrower directional spread whereas high frequency waves are more isotropic.
         </p>
 
-        <h3>
+        <h3 id="Ocean Swell">
             Ocean Swell
         </h3>
 
@@ -296,15 +512,71 @@
         <hr></hr>
 
         <p>
-            Given the magnitude of a frequency-domain Gaussian sample at \(\hat{A}\), we know that the corresponding spatial-domain amplitude is \(\dfrac{\hat{A} \sqrt{|\hat{\mathbf{\Sigma}}^{-1}}|}{\pi}\). As we are only sampling isotropic Gaussians, the covariance matrix \(\mathbf{\Sigma}\) can be expressed as a scaled identity matrix \(\sigma^2\mathbf{I}\), where \(\sigma\) is the standard deviation of the Gaussian in the frequency domain. Knowing this, the spatial-domain amplitude simplifies to:
+            Given a frequency-domain Gaussian with parameters \(\hat{A}\) and \(\hat{\mathbf{\Sigma}}\), we know that the corresponding spatial-domain amplitude \(A\) is \(\dfrac{\hat{A} \sqrt{|\hat{\mathbf{\Sigma}}}|}{4\pi}\). The covariance matrix can be decomposed into the product of scaling matrix \(\mathbf{S}\) and rotation matrix \(\mathbf{R}\):
         </p>
 
         <p>
-            $$ A = \dfrac{\hat{A} \sigma^2}{\pi} $$ 
+            $$ \hat{\mathbf{\Sigma}} = \mathbf{R} \mathbf{S} \mathbf{S^\top} \mathbf{R^\top} $$
         </p>
 
-        <h2>
-            Anisotropically Filtering Gabor Noise (WIP)
+        <p>
+            The determinant of \(\hat{\mathbf{\Sigma}}\) is invariant with respect to the rotation \(\mathbf{R}\), so the equation for the spatial-domain amplitude can be written as:
+        </p>
+
+        <p>
+            $$ A = \dfrac{\hat{A} \sqrt{|\mathbf{S}^2|}}{4\pi} $$
+        </p>
+
+        <p>
+            \(\mathbf{S^2}\) is simply a diagonal matrix whose entries are the variance of the Gaussian along each axis. The variance \(\sigma^2\) is related to the bandwidth \(B\) through the following relation:
+        </p>
+
+        <p>
+            $$ \sigma^2 = \dfrac{B^2}{8\ln{2}} $$
+        </p>
+
+        <p>
+            Letting us simplify \(\sqrt{|\mathbf{S^2}|}\) as follows:
+        </p>
+
+        <p>
+            $$ \sqrt{|\mathbf{S}^2|} = \sqrt{\sigma_x^2 \sigma_y^2} = \sigma_x \sigma_y = \dfrac{B_x B_y}{8\ln{2}} $$
+        </p>
+
+        <p>
+            Giving us the final simplified equation:
+        </p>
+
+        <p>
+            $$ A = \dfrac{\hat{A} B_x B_y}{32\pi\ln{2}} $$
+        </p>
+
+        <h2 id="Local Parameterisation">
+            Local Parameterisation
+        </h2>
+
+        <p>
+            A really nice advantage of using procedural noise to model wave spectra is the ability to make local features by changing the spectrum parameters based on the position of the current evaluation point. For example, one could augment the spectrum by feeding in a wind vector from a global wind field, allowing for more complex ocean textures. Ocean currents and surface contaminants also perturb the ocean surface.
+        </p>
+
+        <p>
+            FIGURE
+        </p>
+
+        <p>
+            This technique can be extended to other bodies of water as well. Seamless transitions between oceans, shores, lakes, and rivers are possible so long as you have a means of expressing the wave spectra of these features.
+        </p>
+
+        <h1 id="Ray Tracing">
+            Ray Tracing a Gabor Ocean
+        </h1>
+
+        <h2 id="Analytical Derivatives">
+            Analytical Derivatives
+        </h2>
+
+        <h2 id="Anisotropic Filtering">
+            Anisotropic Filtering
         </h2>
 
         <p>
@@ -475,8 +747,8 @@
 
         <hr></hr>
 
-        <h2>
-            Cartesian Form of a Gerstner Wave (WIP)
+        <h2 id="Cartesian Form of a Gerstner Wave">
+            Cartesian Form of a Gerstner Wave
         </h2>
 
         <p>
@@ -518,6 +790,10 @@
         <p>
             An initial guess
         </p>
+
+        <h2 id="The Lipschitz Constant">
+            The Lipschitz Constant
+        </h2>
 
         <h2>
             Derivatives and Lipschitz Constants of a Gerstner Wave (WIP)
@@ -624,6 +900,10 @@
         <p>
             In essence this tells us that given a global Lipschitz constant \(\lambda\) over a planar height field \(f(\vec{q})\), we can derive the Lipschitz constant of the height field along the ray by multiplying the constant with the dot product between the ray direction and the plane's normal.
         </p>
+
+        <h2 id="Adaptive Sphere Tracing">
+            Adaptive Sphere Tracing
+        </h2>
 
         <h2>
             Upper Bounds for The Amplitude of an Octave of Gabor Ocean Noise (WIP)
