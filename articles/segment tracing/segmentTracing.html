@@ -69,7 +69,7 @@
         </h2>
 
         <p>
-            An <a href="https://en.wikipedia.org/wiki/Implicit_surface">implicit surface</a> is any surface that can be expressed as an <a href="https://en.wikipedia.org/wiki/Implicit_function">implicit function</a> in the form \(F(\vec{p}) = 0\), where \(\vec{p}\) is a vector representing a point in space. A very simple example of an implicit surface in 2D is \(x^2 + y^2 - r^2 = 0\). If you were to work out all possible values of \(x^2 + y^2 - r^2\) for every \(\vec{p} = (x, y)\) in space and only highlight the points that give 0, you would get a circle of radius \(r\).
+            An <a href="https://en.wikipedia.org/wiki/Implicit_surface">implicit surface</a> is any surface that can be expressed as an <a href="https://en.wikipedia.org/wiki/Implicit_function">implicit function</a> in the form \(F(\mathbf{p}) = 0\), where \(\mathbf{p}\) is a vector representing a point in space. A very simple example of an implicit surface in 2D is \(x^2 + y^2 - r^2 = 0\). If you were to work out all possible values of \(x^2 + y^2 - r^2\) for every \(\mathbf{p} = (x, y)\) in space and only highlight the points that give 0, you would get a circle of radius \(r\).
         </p>
 
         <p>
@@ -77,27 +77,27 @@
         </p>
 
         <p>
-            Metaballs are a type of implicit surface. Each distinct metaball \(i\) is defined by an implicit function \(F_i(\vec{p})\). By summing up all of these functions and taking the set of points that equals 0 we produce the smooth, 'blobby' surface that is characteristic of metaballs. Often we include a bias parameter \(T\) that gives us some control over the extent of the surface:
+            Metaballs are a type of implicit surface. Each distinct metaball \(n\) is defined by an implicit function \(F_n(\mathbf{p})\). By summing up all of these functions and taking the set of points that equals 0 we produce the smooth, 'blobby' surface that is characteristic of metaballs. Often we include a bias parameter \(T\) that gives us some control over the extent of the surface:
         </p>
 
         <p>
-            $$ F(\vec{p}) = \sum_{i} F_i(\vec{p}) - T = 0 $$
+            $$ F(\mathbf{p}) = \sum_{n} F_n(\mathbf{p}) - T = 0 $$
         </p>
 
         <p>
-            Now to actually render these surfaces in 3D we need to figure out whether or not a given pixel's view ray intersects with this surface. We parameterise a point \(\vec{p}\) along the ray in terms of the ray origin \(r_o\), the ray direction \(r_d\), and the distance \(t\) along the ray:
+            Now to actually render these surfaces in 3D we need to figure out whether or not a given pixel's view ray intersects with this surface. We parameterise a point \(\mathbf{p}\) along the ray in terms of the ray origin \(\mathbf{r_o}\), the ray direction \(\mathbf{r_d}\), and the distance \(t\) along the ray:
         </p>
 
         <p>
-            $$ \delta(t) = r_o + tr_d $$
+            $$ \mathbf{\delta}(t) = \mathbf{r_o} + t\mathbf{r_d} $$
         </p>
 
         <p>
-            Plugging \(\delta(t)\) into the function \(F(\vec{p})\) gives us a one-dimensional function with respect to the ray parameter \(t\). The surface is found at the points where this function is equal to 0, in other words it corresponds to the function's <a href="https://en.wikipedia.org/wiki/Zero_of_a_function">roots</a>:
+            Plugging \(\mathbf{\delta}(t)\) into the function \(F(\mathbf{p})\) gives us a one-dimensional function with respect to the ray parameter \(t\). The surface is found at the points where this function is equal to 0, in other words it corresponds to the function's <a href="https://en.wikipedia.org/wiki/Zero_of_a_function">roots</a>:
         </p>
 
         <p>
-            $$ F \circ \delta(t) = 0 $$
+            $$ F \circ \mathbf{\delta}(t) = 0 $$
         </p>
 
         <p>
@@ -116,7 +116,7 @@
         </h2>
 
         <p>
-            Ray marching is the process of repeatedly evaluating \(F \circ \delta(t)\) for increasing values of \(t\) until we hit the surface. The simplest way to do this is to march along the ray in fixed-length increments. Larger steps require less work but risk skipping over parts of the surface and producing incorrect results, while smaller steps provide more accuracy at the cost of more work.
+            Ray marching is the process of repeatedly evaluating \(F \circ \mathbf{\delta}(t)\) for increasing values of \(t\) until we hit the surface. The simplest way to do this is to march along the ray in fixed-length increments. Larger steps require less work but risk skipping over parts of the surface and producing incorrect results, while smaller steps provide more accuracy at the cost of more work.
         </p>
 
         <p>
@@ -127,7 +127,7 @@
         </p>
 
         <p>
-            Often we can analyse the function to get a better idea of how large a step we can take without overshooting the surface. This is where we can make use the property of <a href="https://en.wikipedia.org/wiki/Lipschitz_continuity">Lipschitz continuity</a>. The Lipschitz constant of a function \(f(x)\) is the smallest value \(\lambda\) that satisfies the following inequality for any two points \(a\) and \(b\):
+            Sometimes we can analyse the function to get a better idea of how large a step we can take without overshooting the surface. This is where we can make use the property of <a href="https://en.wikipedia.org/wiki/Lipschitz_continuity">Lipschitz continuity</a>. The Lipschitz constant of a function \(f(x)\) is the smallest value \(\lambda\) that satisfies the following inequality for any two points \(a\) and \(b\):
         </p>
 
         <p>
@@ -154,7 +154,7 @@
         </p>
 
         <p>
-            This gives us a guarantee on the largest step we can take without overshooting the surface. Moving forward we define \(f(t) = F \circ \delta(t)\). Let \(x_0\) be any root of \(f(t)\) such that \(f (x_0) = 0\), corresponding to the surface. We can then write out equation (\(\ref{lipschitz}\)) as:
+            This gives us a guarantee on the largest step we can take without overshooting the surface. Moving forward we define \(f(t) = F \circ \mathbf{\delta}(t)\). Let \(x_0\) be any root of \(f(t)\) such that \(f (x_0) = 0\), corresponding to the surface. We can then write out equation (\(\ref{lipschitz}\)) as:
         </p>
 
         <p>
@@ -436,6 +436,10 @@ groupshared Metaball groupMetaballs[512];
             So after all that, is this worth it or useful at all? 
         </p>
 
+        <p>
+            Another big advantage meshing has over segment tracing is the ability to leverage the GPU's native MSAA capabilities to produce anti-aliased isosurfaces.
+        </p>
+
         <h2>
             Appendix
         </h2>
@@ -449,11 +453,11 @@ groupshared Metaball groupMetaballs[512];
         </p>
 
         <p>
-            $$ F(\vec{p}) = (1-|\vec{p}|^2)^3 \quad -1 \le x \le 1 $$
+            $$ F(\mathbf{p}) = (1-|\mathbf{p}|^2)^3 \quad -1 \le x \le 1 $$
         </p>
 
         <p>
-            Let's say we want to find \(\lambda^{+} = \max(f'(x))\) for a segment \(x \in [t_0, t_1]\) along the ray. If we plot the derivative of \(F \circ \delta(t)\), we see that it has exactly one maximum:
+            Let's say we want to find \(\lambda^{+} = \max(f'(x))\) for a segment \(x \in [t_0, t_1]\) along the ray. If we plot the derivative of \(F \circ \mathbf{\delta}(t)\), we see that it has exactly one maximum:
         </p>
 
         <p>
@@ -472,13 +476,13 @@ groupshared Metaball groupMetaballs[512];
         </p>
 
         <p>
-            To find \(f(t) = F \circ \delta(t)\) we'll plug in the ray equation:
+            To find \(f(t) = F \circ \mathbf{\delta}(t)\) we'll plug in the ray equation:
         </p>
     
         <p>
             $$ \begin{aligned} 
-                F \circ \delta(t) &= F(r_o + tr_d) \\
-                &= (1-|r_o + tr_d|^2)^3 \\
+                F \circ \mathbf{\delta}(t) &= F(\mathbf{r_o} + t\mathbf{r_d}) \\
+                &= (1-|\mathbf{r_o} + t\mathbf{r_d}|^2)^3 \\
                 &= (1 - at^2 - 2bt - c)^3
             \end{aligned} $$
         </p>
@@ -488,7 +492,7 @@ groupshared Metaball groupMetaballs[512];
         </p>
 
         <p>
-            $$ a = r_o \cdot r_o \quad b = r_o \cdot r_d \quad c = r_d \cdot r_d $$
+            $$ a = \mathbf{r_o} \cdot \mathbf{r_o} \quad b = \mathbf{r_o} \cdot \mathbf{r_d} \quad c = \mathbf{r_d} \cdot \mathbf{r_d} $$
         </p>
 
         <p>
