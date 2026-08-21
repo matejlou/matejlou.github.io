@@ -1,0 +1,45 @@
+<!doctype html>
+
+<html lang="en">
+    <head>
+        <title> Site Name. </title>
+        <link rel="stylesheet" href="/styles.css">
+        <link rel="stylesheet" href="/resources/dark.min.css">
+        <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+        <script src="/resources/highlight.min.js"></script>
+        <script src="/resources/hlsl.min.js"
+    ></script>
+        <script>hljs.highlightAll();</script>
+    </head>
+
+    <body>
+        <header>
+
+        </header>
+
+        <h1>
+            Psuedo 3D Racer
+        </h1>
+
+        <p>
+            There are plenty of resources on the web detailing ways to reproduce this psuedo-3D effect, but most of them assume a traditional software rendering approach where every pixel can be plotted individually. In this article I'd like to cover a method that is better suited to modern 3D rendering pipelines, based on manipulating triangles as opposed to plotting pixels.
+        </p>
+
+        <p>
+            A great case study to begin looking at this approach is the 3DO version of Road Rash. Unlike classic psuedo-3D racers, Road Rash actually rasterises triangles onto the screen, but the geometry still retains the classic psuedo-3D warping effect.
+        </p>
+
+        <p>
+            The core mathematical operation underlying this look is the shear transformation.
+        </p>
+
+        <p>
+            We start by defining the bearing of a given location along the track. This can come from an external source or could be evaluated procedurally using a coherent noise function.
+        </p>
+
+        <p>
+            The magnitude of the shear is the definite integral of the bearing from the current view location to the vertex.
+        </p>
+        
+    </body>
+</html>

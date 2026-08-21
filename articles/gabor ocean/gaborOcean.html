@@ -3,12 +3,11 @@
 <html lang="en">
     <head>
         <title> Ocean Simulation With Gabor Noise </title>
-        <link rel="stylesheet" href="/styles.css">
-        <link rel="stylesheet" href="/resources/dark.min.css">
+        <link rel="stylesheet" href="../../styles.css">
+        <link rel="stylesheet" href="../../resources/highlight.css">
         <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
-        <script src="/resources/highlight.min.js"></script>
-        <script src="/resources/hlsl.min.js"
-    ></script>
+        <script src="../../resources/highlight.min.js"></script>
+        <script src="../../resources/hlsl.js"></script>
         <script>hljs.highlightAll();</script>
     </head>
 
@@ -21,23 +20,27 @@
             Ocean Simulation With Gabor Noise
         </h1>
 
-        <ul>
+        <h2>
+            Contents
+        </h2>
+
+        <ul style="list-style: none;">
             <li><a href="#Introduction">A Gentle Introduction To Gabor Noise</a></li>
-            <ul>
+            <ul style="list-style: none;">
                 <li><a href="#Noise and The Frequency Spectrum">Noise and The Frequency Spectrum</a></li>
                 <li><a href="#Sparse Convolution">Sparse Convolution</a></li>
                 <li><a href="#Optimising Gabor Noise">Optimising Gabor Noise</a></li>
             </ul>
 
             <li><a href="#Maths">Getting Dirty with the Details</a></li>
-            <ul>
+            <ul style="list-style: none;">
                 <li><a href="#The Unique Spectral Properties of Gabor Kernels">The Unique Spectral Properties of Gabor Kernels</a></li>
-                <ul>
+                <ul style="list-style: none;">
                     <li><a href="#Classic Gabor">Classic Gabor</a></li>
                     <li><a href="#The Window Function">The Window Function</a></li>
                 </ul>
                 <li><a href="#Simulating Ocean Spectra">Simulating Ocean Spectra</a></li>
-                <ul>
+                <ul style="list-style: none;">
                     <li><a href="#Spectral Sampling">Spectral Sampling</a></li>
                     <li><a href="#Directional Spreading">Directional Spreading</a></li>
                     <li><a href="#Ocean Swell">Ocean Swell</a></li>
@@ -45,13 +48,13 @@
             </ul>
 
             <li><a href="#Ray Tracing">Ray Tracing a Gabor Ocean</a></li>
-            <ul>
+            <ul style="list-style: none;">
                 <li><a href="#Cartesian Form of a Gerstner Wave">Cartesian Form of a Gerstner Wave</a></li>
                 <li><a href="#Analytical Derivatives">Analytical Derivatives</a></li>
                 <li><a href="#Anisotropic Filtering">Anisotropic Filtering</a></li>
 
                 <li><a href="#The Lipschitz Constant">The Lipschitz Constant</a></li>
-                <ul>
+                <ul style="list-style: none;">
                     <li><a href="#Lipschitz Constant of a Gerstner Wave">Lipschitz Constant of a Gerstner Wave</a></li>
                     <li><a href="#Lipschitz Constant of a Height Field">Lipschitz Constant of a Height Field</a></li>
                 </ul>
