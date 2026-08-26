@@ -69,6 +69,7 @@
             <li><a href="#Derivation">Derivation</a></li>
             <li><a href="#Implementation">Implementation</a></li>
             <li><a href="#Results">Results</a></li>
+            <li><a href="#Further Work">Further Work</a></li>
             <li><a href="#References">References</a></li>
         </ul>
 
@@ -646,7 +647,15 @@ groupshared Metaball groupMetaballs[512];
         </table>
 
         <p>
-            Interestingly, despite clearly reducing the number of steps required to reach the isosurface, quadratic segment tracing and even improved quadratic performed consistently worse than linear segment tracing. Analysis shows that the shader is highly ALU-bound, so it's likely that the increased computational workload of the quadratic approach cancels out any savings made from the reduced number of steps.
+            Interestingly, despite clearly reducing the number of steps required to reach the isosurface, quadratic segment tracing and even improved quadratic performed consistently worse than linear segment tracing. This is likely because the relatively small reduction in step count fails to compensate for the added computation needed to find the root of the quadratic inclusion function. For this reason, and because it leads to a much simpler implementation, sticking to linear segment tracing is probably good enough.
+        </p>
+
+        <h2 id="Further Work">
+            Further Work
+        </h2>
+
+        <p>
+            One thing I didn't explore was simplification through level-of-detail adjustments. Perhaps after a certain distance close groups of metaballs could be approximated by a single, larger metaball. Another idea is to revert to a simplified two-dimensional metaball renderer for small or distant groups of metaballs, which would just entail 'splatting' metaball contributions instead of a full ray trace.
         </p>
 
         <h2 id="References">
