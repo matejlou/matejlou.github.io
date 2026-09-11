@@ -19,9 +19,9 @@ body {
 }
 
 .container-scroll {
-    overflow-y: auto;
-    overflow-x: auto;
-    width: 100%;
+    display: block;
+    overflow: auto;
+    white-space: nowrap;
 }
 
 hr {
