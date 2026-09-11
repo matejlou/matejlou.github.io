@@ -632,27 +632,29 @@ groupshared Metaball groupMetaballs[512];
             Below is a comparison of the number of ray steps required to reach the isosurface, represented in colour where blue is \(0\) steps and red is \(48\) steps. Sphere tracing failed to reach most of the isosurface in \(48\) steps or less so it is not shown here.
         </p>
 
-        <table>
-            <tr>
-                <th rowspan="2">Linear Segment Tracing</th>
-                <th colspan="2">Quadratic Segment Tracing</th>
-            </tr>
-            <tr>
-                <th>Standard</th>
-                <th>Improved</th>
-            </tr>
-            <tr>
-                <td>
-                    <img src="images/fig_raySteps_linear.png" alt="">
-                </td>
-                <td>
-                    <img src="images/fig_raySteps_quadraticstandard.png" alt="">
-                </td>
-                <td>
-                    <img src="images/fig_raySteps_quadraticImproved.png" alt="">
-                </td>
-            </tr>
-        </table>
+        <div class="container-scroll">
+            <table>
+                <tr>
+                    <th rowspan="2">Linear Segment Tracing</th>
+                    <th colspan="2">Quadratic Segment Tracing</th>
+                </tr>
+                <tr>
+                    <th>Standard</th>
+                    <th>Improved</th>
+                </tr>
+                <tr>
+                    <td>
+                        <img src="images/fig_raySteps_linear.png" alt="">
+                    </td>
+                    <td>
+                        <img src="images/fig_raySteps_quadraticstandard.png" alt="">
+                    </td>
+                    <td>
+                        <img src="images/fig_raySteps_quadraticImproved.png" alt="">
+                    </td>
+                </tr>
+            </table>
+        </div>
 
         <p>
             Interestingly, despite clearly reducing the number of steps required to reach the isosurface, quadratic segment tracing and even improved quadratic performed consistently worse than linear segment tracing. This is likely because the relatively small reduction in step count fails to compensate for the added computation needed to find the root of the quadratic inclusion function. For this reason, and because it leads to a much simpler implementation, sticking to linear segment tracing is probably good enough.
