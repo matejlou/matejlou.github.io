@@ -629,7 +629,7 @@ groupshared Metaball groupMetaballs[512];
         </div>
 
         <p>
-            Below is a comparison of the number of ray steps required to reach the isosurface, represented in colour where blue is \(0\) steps and red is \(32\) steps. Sphere tracing failed to reach most of the isosurface in \(48\) steps or less so it is not shown here.
+            Below is a comparison of the number of segment tracing iterations required to reach the isosurface, represented in colour where blue is \(0\) steps and red is \(32\) steps.
         </p>
 
         <div class="container-scroll">
@@ -647,7 +647,7 @@ groupshared Metaball groupMetaballs[512];
                         <img src="images/fig_raySteps_linear.png" alt="">
                     </td>
                     <td>
-                        <img src="images/fig_raySteps_quadraticstandard.png" alt="">
+                        <img src="images/fig_raySteps_quadraticStandard.png" alt="">
                     </td>
                     <td>
                         <img src="images/fig_raySteps_quadraticImproved.png" alt="">
@@ -657,7 +657,7 @@ groupshared Metaball groupMetaballs[512];
         </div>
 
         <p>
-            Interestingly, despite clearly reducing the number of steps required to reach the isosurface, quadratic segment tracing and even improved quadratic performed consistently worse than linear segment tracing. This is likely because the relatively small reduction in step count fails to compensate for the added computation needed to find the root of the quadratic inclusion function. For this reason, and because it leads to a much simpler implementation, sticking to linear segment tracing is probably good enough.
+            We can here that in some cases, standard quadratic segment tracing actually requires more steps to reach the isosurface. However, even though the improved quadratic method generally takes less steps than linear segment tracing, the latter still wins in terms of performance. This is likely because the relatively small reduction in step count fails to compensate for the added computation needed to find the root of the quadratic inclusion function.
         </p>
 
         <p>
@@ -669,7 +669,7 @@ groupshared Metaball groupMetaballs[512];
         </h2>
 
         <p>
-            One thing I didn't explore was simplification through level-of-detail adjustments. Perhaps after a certain distance close groups of metaballs could be approximated by a single, larger metaball. Another idea is to revert to a simplified two-dimensional metaball renderer for small or distant groups of metaballs, which would just entail 'splatting' metaball contributions instead of a full ray trace.
+            One thing I didn't explore was simplification through level-of-detail adjustments. Perhaps after a certain distance close groups of metaballs could be approximated by a single, larger metaball. Another idea is to revert to a simplified two-dimensional renderer for small or distant groups of metaballs, which would just entail 'splatting' metaball contributions instead of a full ray trace.
         </p>
 
         <h2 id="References">
