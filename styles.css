@@ -18,6 +18,12 @@ body {
     margin: auto;
 }
 
+.container-scroll {
+    overflow-y: auto;
+    overflow-x: auto;
+    width: 100%;
+}
+
 hr {
     color: var(--colour-text-primary);
     border-style: solid;

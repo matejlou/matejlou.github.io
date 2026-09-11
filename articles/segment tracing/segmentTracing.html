@@ -559,7 +559,7 @@ groupshared Metaball groupMetaballs[512];
         <p>
             <figure>
                 <img src="images/fig_screenSpaceMetaballs.png" alt="">
-                <figcaption>A particle system rendered as an isosurface consisting of approximately 2048 differently coloured metaballs.</figcaption>
+                <figcaption>A particle system rendered as an isosurface consisting of approximately 2048 coloured metaballs.</figcaption>
             </figure>
         </p>
 
@@ -571,60 +571,62 @@ groupshared Metaball groupMetaballs[512];
             Below is a table showing the time taken to render a given number of metaballs. The maximum number of ray steps was capped to \(256\) for all benchmarks, although only naive sphere tracing ever hit this limit.
         </p>
 
-        <table>
-            <tr>
-                <th rowspan="2"># Metaballs</th>
-                <th rowspan="2">Sphere Tracing</th>
-                <th rowspan="2">Linear Segment Tracing</th>
-                <th colspan="2">Quadratic Segment Tracing</th>
-            </tr>
-            <tr>
-                <th>Standard</th>
-                <th>Improved</th>
-            </tr>
-            <tr>
-                <th>64</th>
-                <td>1.6ms</td>
-                <td>1.5ms</td>
-                <td>4.0ms</td>
-                <td>1.6ms</td>
-            </tr>
-            <tr>
-                <th>128</th>
-                <td>2.3ms</td>
-                <td>1.5ms</td>
-                <td>4.0ms</td>
-                <td>1.6ms</td>
-            </tr>
-            <tr>
-                <th>256</th>
-                <td>4.0ms</td>
-                <td>1.7ms</td>
-                <td>4.0ms</td>
-                <td>2.2ms</td>
-            </tr>
-            <tr>
-                <th>512</th>
-                <td>6.6ms</td>
-                <td>2.6ms</td>
-                <td>4.0ms</td>
-                <td>3.7ms</td>
-            </tr>
-            <tr>
-                <th>1024</th>
-                <td>12.3ms</td>
-                <td>4.4ms</td>
-                <td>5.3ms</td>
-                <td>6.1ms</td>
-            </tr>
-            <tr>
-                <th>2048</th>
-                <td>23.1ms</td>
-                <td>7.9ms</td>
-                <td>9.6ms</td>
-                <td>10.7ms</td>
-            </tr>
-        </table>
+        <div class="container-scroll">
+            <table>
+                <tr>
+                    <th rowspan="2"># Metaballs</th>
+                    <th rowspan="2">Sphere Tracing</th>
+                    <th rowspan="2">Linear Segment Tracing</th>
+                    <th colspan="2">Quadratic Segment Tracing</th>
+                </tr>
+                <tr>
+                    <th>Standard</th>
+                    <th>Improved</th>
+                </tr>
+                <tr>
+                    <th>64</th>
+                    <td>1.6ms</td>
+                    <td>1.5ms</td>
+                    <td>4.0ms</td>
+                    <td>1.6ms</td>
+                </tr>
+                <tr>
+                    <th>128</th>
+                    <td>2.3ms</td>
+                    <td>1.5ms</td>
+                    <td>4.0ms</td>
+                    <td>1.6ms</td>
+                </tr>
+                <tr>
+                    <th>256</th>
+                    <td>4.0ms</td>
+                    <td>1.7ms</td>
+                    <td>4.0ms</td>
+                    <td>2.2ms</td>
+                </tr>
+                <tr>
+                    <th>512</th>
+                    <td>6.6ms</td>
+                    <td>2.6ms</td>
+                    <td>4.0ms</td>
+                    <td>3.7ms</td>
+                </tr>
+                <tr>
+                    <th>1024</th>
+                    <td>12.3ms</td>
+                    <td>4.4ms</td>
+                    <td>5.3ms</td>
+                    <td>6.1ms</td>
+                </tr>
+                <tr>
+                    <th>2048</th>
+                    <td>23.1ms</td>
+                    <td>7.9ms</td>
+                    <td>9.6ms</td>
+                    <td>10.7ms</td>
+                </tr>
+            </table>
+        </div>
 
         <p>
             Below is a comparison of the number of ray steps required to reach the isosurface, represented in colour where blue is \(0\) steps and red is \(48\) steps. Sphere tracing failed to reach most of the isosurface in \(48\) steps or less so it is not shown here.
