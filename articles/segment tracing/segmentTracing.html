@@ -10,6 +10,7 @@
         <script src="../../resources/hlsl.js"></script>
         <script>hljs.highlightAll();</script>
         <script>hljs.getLanguage('hlsl').keywords.title += 'Metaball'</script>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0"></meta>
     </head>
 
     <body>
@@ -554,7 +555,10 @@ groupshared Metaball groupMetaballs[512];
         </p>
 
         <p>
-            FIGURE.
+            <figure>
+                <img src="images/fig_screenSpaceMetaballs.png" alt="">
+                <figcaption>A particle system rendered as an isosurface consisting of approximately 2048 differently coloured metaballs.</figcaption>
+            </figure>
         </p>
 
         <h2 id="Results">
@@ -648,6 +652,10 @@ groupshared Metaball groupMetaballs[512];
 
         <p>
             Interestingly, despite clearly reducing the number of steps required to reach the isosurface, quadratic segment tracing and even improved quadratic performed consistently worse than linear segment tracing. This is likely because the relatively small reduction in step count fails to compensate for the added computation needed to find the root of the quadratic inclusion function. For this reason, and because it leads to a much simpler implementation, sticking to linear segment tracing is probably good enough.
+        </p>
+
+        <p>
+            A downside of this approach is that it will produce aliasing around the silhouette of the isosurface, something which is easier to solve with more typical mesh reconstruction methods thanks to hardware MSAA. If you're working with a rendering pipeline that involves some kind of screen-space antialiasing then this is less of an issue however.
         </p>
 
         <h2 id="Further Work">
