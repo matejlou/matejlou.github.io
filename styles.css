@@ -145,7 +145,7 @@ img, video {
 }
 
 @media (prefers-color-scheme: dark) {
-    img {
+    img.invertible {
         filter: invert(1);
     }
 }
