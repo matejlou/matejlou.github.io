@@ -95,19 +95,19 @@
         </p>
 
         <p>
-            Metaballs are a type of implicit surface. Each distinct metaball \(n\) is defined by an implicit function \(F_n(\mathbf{p})\). By summing up all of these functions and taking the set of points that equals 0 we produce the smooth, 'blobby' surface that is characteristic of metaballs. Often we include a bias parameter \(T\) that gives us some control over the extent of the surface:
+            Metaballs are a type of implicit surface. Each distinct metaball at a position \(\mathbf{p}_n\) is defined by an implicit function \(F(\mathbf{p}_n)\). By summing up all of these functions and taking the set of points that equals 0 we produce the smooth, blobby surface that is characteristic of metaballs. Often we include a bias parameter \(T\) that gives us some control over the extent of the surface:
         </p>
 
         <p>
-            $$ F(\mathbf{p}) = \sum_{n} F_n(\mathbf{p}) - T = 0 $$
+            $$ F(\mathbf{p}) = \sum_{n} F(\mathbf{p}_n) - T = 0 $$
         </p>
 
         <p>
-            Now to actually render these surfaces in 3D we need to figure out whether or not a given pixel's view ray intersects with this surface. We parameterise a point \(\mathbf{p}\) along the ray in terms of the ray origin \(\mathbf{r_o}\), the ray direction \(\mathbf{r_d}\), and the distance \(t\) along the ray:
+            Now to actually render these surfaces in 3D we need to figure out whether or not a given pixel's view ray intersects with this surface. We parameterise a point \(\mathbf{p}\) along the ray in terms of the ray origin \(\mathbf{r}_o\), the ray direction \(\mathbf{r}_d\), and the distance \(t\) along the ray:
         </p>
 
         <p>
-            $$ \mathbf{\delta}(t) = \mathbf{r_o} + t\mathbf{r_d} $$
+            $$ \mathbf{\delta}(t) = \mathbf{r}_o + t\mathbf{r}_d $$
         </p>
 
         <p>
@@ -382,8 +382,8 @@
     
         <p>
             $$ \begin{aligned} 
-                F \circ \mathbf{\delta}(t) &= F(\mathbf{r_o} + t\mathbf{r_d}) \\
-                &= (1-|\mathbf{r_o} + t\mathbf{r_d}|^2)^3 \\
+                F \circ \mathbf{\delta}(t) &= F(\mathbf{r}_o + t\mathbf{r}_d) \\
+                &= (1-|\mathbf{r}_o + t\mathbf{r}_d|^2)^3 \\
                 &= (1 - at^2 - 2bt - c)^3
             \end{aligned} $$
         </p>
@@ -393,7 +393,7 @@
         </p>
 
         <p>
-            $$ a = \mathbf{r_d} \cdot \mathbf{r_d} \quad b = \mathbf{r_d} \cdot \mathbf{r_o} \quad c = \mathbf{r_o} \cdot \mathbf{r_o} $$
+            $$ a = \mathbf{r}_d \cdot \mathbf{r}_d \quad b = \mathbf{r}_d \cdot \mathbf{r}_o \quad c = \mathbf{r}_o \cdot \mathbf{r}_o $$
         </p>
 
         <p>
@@ -413,7 +413,7 @@
         </p>
 
         <p>
-            The roots are found where either \(u = 0\) or \(-au + 4(at + b^2) = 0\). The former case occurs at the edges of metaball function, where \(|\mathbf{r_o} + t\mathbf{r_d}|^2 = 1\). Looking at the graph we know that this is not where the extrema lie, so we want to solve the latter case which reduces to the following:
+            The roots are found where either \(u = 0\) or \(-au + 4(at + b^2) = 0\). The former case occurs at the edges of metaball function, where \(|\mathbf{r}_o + t\mathbf{r}_d|^2 = 1\). Looking at the graph we know that this is not where the extrema lie, so we want to solve the latter case which reduces to the following:
         </p>
 
         <p>
@@ -568,7 +568,7 @@ groupshared Metaball groupMetaballs[512];
         </h2>
 
         <p>
-            Below is a table showing the time taken to render a given number of metaballs. The maximum number of ray steps was capped to \(256\) for all benchmarks, although only naive sphere tracing ever hit this limit.
+            Below is a table showing the average time taken to render a given number of metaballs on an Apple M1 Max. The maximum number of ray steps was capped to \(256\) for all benchmarks, although only naive sphere tracing ever hit this limit.
         </p>
 
         <div class="container-scroll">
@@ -584,52 +584,52 @@ groupshared Metaball groupMetaballs[512];
                     <th>Improved</th>
                 </tr>
                 <tr>
-                    <th>64</th>
-                    <td>1.6ms</td>
-                    <td>1.5ms</td>
-                    <td>4.0ms</td>
-                    <td>1.6ms</td>
-                </tr>
-                <tr>
                     <th>128</th>
-                    <td>2.3ms</td>
-                    <td>1.5ms</td>
-                    <td>4.0ms</td>
-                    <td>1.6ms</td>
+                    <td>2.1ms</td>
+                    <td>0.5ms</td>
+                    <td>0.6ms</td>
+                    <td>0.7ms</td>
                 </tr>
                 <tr>
                     <th>256</th>
-                    <td>4.0ms</td>
-                    <td>1.7ms</td>
-                    <td>4.0ms</td>
-                    <td>2.2ms</td>
+                    <td>4.3ms</td>
+                    <td>0.8ms</td>
+                    <td>1.1ms</td>
+                    <td>1.3ms</td>
                 </tr>
                 <tr>
                     <th>512</th>
-                    <td>6.6ms</td>
-                    <td>2.6ms</td>
-                    <td>4.0ms</td>
-                    <td>3.7ms</td>
+                    <td>8.4ms</td>
+                    <td>1.6ms</td>
+                    <td>2.2ms</td>
+                    <td>2.4ms</td>
                 </tr>
                 <tr>
                     <th>1024</th>
-                    <td>12.3ms</td>
+                    <td>16.4ms</td>
+                    <td>2.9ms</td>
+                    <td>3.9ms</td>
                     <td>4.4ms</td>
-                    <td>5.3ms</td>
-                    <td>6.1ms</td>
                 </tr>
                 <tr>
                     <th>2048</th>
-                    <td>23.1ms</td>
-                    <td>7.9ms</td>
+                    <td>29.3ms</td>
+                    <td>4.8ms</td>
+                    <td>6.3ms</td>
+                    <td>7.1ms</td>
+                </tr>
+                <tr>
+                    <th>4096</th>
+                    <td>44.9ms</td>
+                    <td>7.4ms</td>
                     <td>9.6ms</td>
-                    <td>10.7ms</td>
+                    <td>10.8ms</td>
                 </tr>
             </table>
         </div>
 
         <p>
-            Below is a comparison of the number of segment tracing iterations required to reach the isosurface, represented in colour where blue is \(0\) steps and red is \(32\) steps.
+            Below is a comparison of the number of segment tracing iterations required to reach the isosurface, capped to a maximum of \(32\) steps.
         </p>
 
         <div class="container-scroll">
@@ -644,24 +644,25 @@ groupshared Metaball groupMetaballs[512];
                 </tr>
                 <tr>
                     <td>
-                        <img src="images/fig_raySteps_linear.png" alt="">
+                        <img class="invertible" src="images/fig_raySteps_linear.png" alt="">
                     </td>
                     <td>
-                        <img src="images/fig_raySteps_quadraticStandard.png" alt="">
+                        <img class="invertible" src="images/fig_raySteps_quadraticStandard.png" alt="">
                     </td>
                     <td>
-                        <img src="images/fig_raySteps_quadraticImproved.png" alt="">
+                        <img class="invertible" src="images/fig_raySteps_quadraticImproved.png" alt="">
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan=3>
+                        <img class="invertible" src="images/fig_raySteps_key.png" alt="">
                     </td>
                 </tr>
             </table>
         </div>
 
         <p>
-            We can here that in some cases, standard quadratic segment tracing actually requires more steps to reach the isosurface. However, even though the improved quadratic method generally takes less steps than linear segment tracing, the latter still wins in terms of performance. This is likely because the relatively small reduction in step count fails to compensate for the added computation needed to find the root of the quadratic inclusion function.
-        </p>
-
-        <p>
-            A downside of this approach is that it will produce aliasing around the silhouette of the isosurface, something which is easier to solve with more typical mesh reconstruction methods thanks to hardware MSAA. If you're working with a rendering pipeline that involves some kind of screen-space antialiasing then this is less of an issue however.
+            We can see that in some cases standard quadratic segment tracing actually requires more steps to reach the isosurface. Also, even though the improved quadratic method generally takes fewer steps than linear segment tracing, the latter still wins out in terms of performance. This is likely because the relatively small reduction in step count fails to compensate for the added effort demanded by the more complex algorithm.
         </p>
 
         <h2 id="Further Work">
