@@ -644,18 +644,18 @@ groupshared Metaball groupMetaballs[512];
                 </tr>
                 <tr>
                     <td>
-                        <img class="invertible" src="images/fig_raySteps_linear.png" alt="">
+                        <img src="images/fig_raySteps_linear.png" alt="">
                     </td>
                     <td>
-                        <img class="invertible" src="images/fig_raySteps_quadraticStandard.png" alt="">
+                        <img src="images/fig_raySteps_quadraticStandard.png" alt="">
                     </td>
                     <td>
-                        <img class="invertible" src="images/fig_raySteps_quadraticImproved.png" alt="">
+                        <img src="images/fig_raySteps_quadraticImproved.png" alt="">
                     </td>
                 </tr>
                 <tr>
                     <td colspan=3>
-                        <img class="invertible" src="images/fig_raySteps_key.png" alt="">
+                        <img src="images/fig_raySteps_key.png" alt="">
                     </td>
                 </tr>
             </table>
@@ -663,6 +663,10 @@ groupshared Metaball groupMetaballs[512];
 
         <p>
             We can see that in some cases standard quadratic segment tracing actually requires more steps to reach the isosurface. Also, even though the improved quadratic method generally takes fewer steps than linear segment tracing, the latter still wins out in terms of performance. This is likely because the relatively small reduction in step count fails to compensate for the added effort demanded by the more complex algorithm.
+        </p>
+
+        <p>
+            Ultimately I think this stands as a neat curiosity with maybe some practical applications for very niche use-cases. Given that good performance is dependent on having a relatively low number of metaballs, I wouldn't expect this to be very useful for things like dense fluid or particle simulations.
         </p>
 
         <h2 id="Further Work">
