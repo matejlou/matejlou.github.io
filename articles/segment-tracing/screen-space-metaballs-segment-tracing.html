@@ -2,7 +2,7 @@
 
 <html lang="en">
     <head>
-        <title> Rendering Screen-Space Metaballs With Segment Tracing </title>
+        <title>Rendering Screen Space Metaballs with Segment Tracing</title>
         <link rel="stylesheet" href="../../styles.css">
         <link rel="stylesheet" href="../../resources/highlight.css">
         <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
@@ -11,6 +11,7 @@
         <script>hljs.highlightAll();</script>
         <script>hljs.getLanguage('hlsl').keywords.title += 'Metaball'</script>
         <meta name="viewport" content="width=device-width, initial-scale=1.0"></meta>
+        <meta charset="utf-8">
     </head>
 
     <body>
@@ -54,7 +55,7 @@
         </header>
 
         <h1>
-            Rendering Screen-Space Metaballs With Segment Tracing
+            Rendering Screen Space Metaballs with Segment Tracing
         </h1>
 
         <h2 id="Contents">
@@ -62,19 +63,19 @@
         </h2>
 
         <ul style="list-style: none;">
-            <li><a href="#Introduction">Introduction</a></li>
-            <li><a href="#Implicit Surfaces">Implicit Surfaces</a></li>
-            <li><a href="#Ray Marching">Ray Marching</a></li>
-            <li><a href="#Inclusion Functions">Inclusion Functions</a></li>
-            <li><a href="#Segment Tracing">Segment Tracing</a></li>
-            <li><a href="#Derivation">Derivation</a></li>
-            <li><a href="#Implementation">Implementation</a></li>
-            <li><a href="#Results">Results</a></li>
-            <li><a href="#Further Work">Further Work</a></li>
-            <li><a href="#References">References</a></li>
+            <li><a href="#introduction">Introduction</a></li>
+            <li><a href="#implicit-surfaces">Implicit Surfaces</a></li>
+            <li><a href="#ray-marching">Ray Marching</a></li>
+            <li><a href="#inclusion-functions">Inclusion Functions</a></li>
+            <li><a href="#segment-tracing">Segment Tracing</a></li>
+            <li><a href="#derivation">Derivation</a></li>
+            <li><a href="#implementation">Implementation</a></li>
+            <li><a href="#results">Results</a></li>
+            <li><a href="#further-work">Further Work</a></li>
+            <li><a href="#references">References</a></li>
         </ul>
 
-        <h2 id="Introduction">
+        <h2 id="introduction">
             Introduction
         </h2>
 
@@ -82,7 +83,7 @@
             There's something very satisfying to me about <a href="https://en.wikipedia.org/wiki/Metaballs">metaballs</a>. Watching blobs merge and seperate as they float through space like the digital equivalent of a lava lamp can be hypnotic. In this post I'd like to cover a technique I've been exploring for rendering pixel-perfect metaballs in real-time. Let's start with some prerequisites...
         </p>
 
-        <h2 id="Implicit Surfaces">
+        <h2 id="implicit-surfaces">
             Implicit Surfaces
         </h2>
 
@@ -103,7 +104,7 @@
         </p>
 
         <p>
-            Now to actually render these surfaces in 3D we need to figure out whether or not a given pixel's view ray intersects with this surface. We parameterise a point \(\mathbf{p}\) along the ray in terms of the ray origin \(\mathbf{r}_o\), the ray direction \(\mathbf{r}_d\), and the distance \(t\) along the ray:
+            To actually render these surfaces in 3D we need to figure out whether or not a given pixel's view ray intersects with this surface. We parameterise a point \(\mathbf{p}\) along the ray in terms of the ray origin \(\mathbf{r}_o\), the ray direction \(\mathbf{r}_d\), and the distance \(t\) along the ray:
         </p>
 
         <p>
@@ -129,7 +130,7 @@
             Of course if it were really that simple I'd end this post right here. Unfortunately this equation is impossible to solve analytically for anything but the simplest functions, much simpler than what we can make use with. We have to find the solution numerically, by taking a bunch of educated guesses until we converge to the answer.
         </p>
 
-        <h2 id="Ray Marching">
+        <h2 id="ray-marching">
             Ray Marching
         </h2>
 
@@ -158,7 +159,7 @@
 
         <p>
             <figure>
-                <img class="invertible" src="images/fig_lipschitz.png" alt="Graph of a bounding cone enclosing the entirety function.">
+                <img class="invertible" src="images/fig_lipschitz.png" alt="Graph of a bounding cone enclosing the entirety of a function.">
                 <figcaption>The bounding cone is guaranteed to always contain the entire function.</figcaption>
             </figure>
         </p>
@@ -176,7 +177,7 @@
         </p>
 
         <p>
-            $$ |f(t)| \le \lambda |t - x_0| $$
+            $$ |f(t)| \le \lambda |x_0 - t| $$
         </p>
 
         <p>
@@ -184,11 +185,11 @@
         </p>
 
         <p>
-            $$ \dfrac{|f(t)|}{\lambda} \le |t - x_0|  $$
+            $$ \dfrac{|f(t)|}{\lambda} \le |x_0 - t|  $$
         </p>
 
         <p>
-            In other words the absolute value of \(\dfrac{f(t)}{\lambda}\) will give us a step size that is always less than or equal to the distance to the surface. Evaluating this value at every step along the ray can accelerate ray marching considerably.
+            In other words the absolute value of \(\dfrac{f(t)}{\lambda}\) will give us a step size that is always less than or equal to the distance to the surface. Evaluating this value at every step along the ray can accelerate ray marching considerably. This is effectively a form of <a href="https://en.wikipedia.org/wiki/Ray_marching#Sphere_tracing">sphere tracing</a>.
         </p>
 
         <p>
@@ -215,28 +216,28 @@
             $$ \lambda_a + \lambda_b \ge \lambda_{a + b} $$
         </p>
 
-        <h2 id="Inclusion Functions">
+        <h2 id="inclusion-functions">
             Inclusion Functions
         </h2>
 
         <p>
-            Using the Lipschitz constant to get a conservative step size is equivalent to finding the intersection between the ray and the enclosing cone mentioned earlier. For a point \(t\) along the ray, the two lines that make up the cone can be described by a pair of equations \(f^{+}\) and \(f^{-}\). Without loss of generality we'll set \(t = 0\):
+            Using the Lipschitz constant to get a conservative step size is equivalent to finding the intersection between the ray and the enclosing cone mentioned earlier. For a point \(t\) along the ray, the two lines that make up the cone can be described by a pair of equations \(f^{+}\) and \(f^{-}\):
         </p>
 
         <p>
-            $$ \begin{aligned} f^{+}(x) = f(t) + \lambda x \\ f^{-}(x) = f(t) - \lambda x \end{aligned} $$
+            $$ \begin{aligned} f^{+}(x) = f(t) + \lambda (x - t) \\ f^{-}(x) = f(t) - \lambda (x - t) \end{aligned} $$
         </p>
 
         <p>
-            These are sometimes referred to as <i>inclusion functions</i> of \(f(t)\).  The intersection is found by setting either \(f^{+}\) or \(f^{-}\) equal to \(0\) and solving for the root:
+            These are sometimes referred to as <i>inclusion functions</i> of \(f(t)\).<a id="footnote-01-ret" href="#footnote-01" title="Jump to reference."><sup>1</sup></a> The intersection is found by setting either \(f^{+}\) or \(f^{-}\) equal to \(0\) and solving for the root:
         </p>
 
         <p>
             $$ 
                 \begin{aligned} 
-                    f(t) \pm \lambda x &= 0 \\ 
-                    \pm \lambda x &= -f(t) \\ 
-                    x &= \pm\dfrac{f(t)}{\lambda} 
+                    f(t) \pm \lambda (x - t) &= 0 \\ 
+                    \pm \lambda (x - t) &= -f(t) \\ 
+                    x - t &= \pm\dfrac{f(t)}{\lambda} 
                 \end{aligned} 
             $$
         </p>
@@ -246,7 +247,7 @@
         </p>
 
         <p>
-            $$ \begin{aligned} f^{+}(x) &= f(t) + \lambda^{+} x \\ f^{-}(x) &= f(t) + \lambda^{-} x \end{aligned} $$
+            $$ \begin{aligned} f^{+}(x) &= f(t) + \lambda^{+} (x - t) \\ f^{-}(x) &= f(t) + \lambda^{-} (x - t) \end{aligned} $$
         </p>
 
         <p>
@@ -259,17 +260,17 @@
 
         <p>
             <figure>
-                <img class="invertible" src="images/fig_inclusionAsymmetric.png" alt="">
+                <img class="invertible" src="images/fig_inclusionAsymmetric.png" alt="Graph illustrating an asymmetric inclusion function.">
                 <figcaption>An asymmetric inclusion function.</figcaption>
             </figure>
         </p>
 
         <p>
-            Often this gives us an even better idea of how far along the ray we can safely step. But we don't need to limit ourselves to straight lines. Replacing our bounding lines with bounding parabolas can give us an even tighter inclusion function whose roots are still relatively simple to solve for. If we let \(\gamma^{\pm}\) be the minimum and maximum values of the <i>second</i> derivative of \(f(t)\) then:
+            Note this is very similar to a first-order Taylor expansion, except that we are using a bounded derivative instead of the derivative at the current point. We can extend this to a second-order Taylor expansion, where we replace our bounding lines with bounding parabolas whose roots are still relatively simple to solve for. If we let \(\gamma^{\pm}\) be the minimum and maximum values of the <i>second</i> derivative of \(f(t)\) then:
         </p>
 
         <p>
-            $$ \begin{aligned} f^{+}(x) &= f(t) + f'(t)x + \dfrac{\gamma^{+}}{2}x^2 \\ f^{-}(x) &= f(t) + f'(t)x + \dfrac{\gamma^{-}}{2}x^2 \end{aligned} $$
+            $$ \begin{aligned} f^{+}(x) &= f(t) + f'(t)(x - t) + \dfrac{\gamma^{+}}{2}(x - t)^2 \\ f^{-}(x) &= f(t) + f'(t)(x - t) + \dfrac{\gamma^{-}}{2}(x - t)^2 \end{aligned} $$
         </p>
 
         Where:
@@ -280,7 +281,7 @@
 
         <p>
             <figure>
-                <img class="invertible" src="images/fig_inclusionQuadratic.png" alt="">
+                <img class="invertible" src="images/fig_inclusionQuadratic.png" alt="Graph illustrating a quadratic asymmetric inclusion function.">
                 <figcaption>A quadratic asymmetric inclusion function.</figcaption>
             </figure>
         </p>
@@ -302,22 +303,22 @@
         </p>
 
         <p>
-            Sometimes a quadratic inclusion function can actually suggest a <i>worse</i> root than a linear inclusion function. This is because the gradient of the bounding parabola is always either monotonically increasing or decreasing, so it's possible for it to exceed the bounds of the original function. The solution is to use a piecewise inclusion function: where the gradient of the parabola exceeds the first-order Lipschitz constant, extend this point with the linear inclusion function. 
+            Sometimes a quadratic inclusion function can actually suggest a <i>worse</i> root than a linear inclusion function. This is because the gradient of the bounding parabola is always either monotonically increasing or decreasing, so it's possible for it to exceed the bounds of the original function. The solution is to use a piecewise inclusion function: where the gradient of the parabola exceeds the first-order Lipschitz constant, extend this point with the linear inclusion function. This is sometimes referred to as an <i>improved</i> quadratic inclusion function.<a id="footnote-02-ret" href="#footnote-02" title="Jump to reference."><sup>2</sup></a>
         </p>
 
         <p>
             <figure>
-                <img class="invertible" src="images/fig_inclusionImproved.png" alt="">
+                <img class="invertible" src="images/fig_inclusionImproved.png" alt="Graph illustrating a piecewise inclusion function superimposed on a regular quadratic inclusion function.">
                 <figcaption>A piecewise inclusion function (solid line) can provide a larger step than a quadratic one (dashed line).</figcaption>
             </figure>
         </p>
 
-        <h2 id="Segment Tracing">
+        <h2 id="segment-tracing">
             Segment Tracing
         </h2>
 
         <p>
-            The inclusion functions we've looked at so far will give us a global bound on the step size anywhere on the ray. However, if we restrict the area of interest to a smaller portion of the ray we are likely to get an even tighter bound. This is the idea behind segment tracing. Given a point on the ray \(t\) and an initial step size \(\epsilon\), segment tracing finds the inclusion function along the segment bounded by \([t, t + \epsilon]\).
+            The inclusion functions we've looked at so far will give us a global bound on the step size anywhere on the ray. However, if we restrict the area of interest to a smaller portion of the ray we are likely to get an even tighter bound. This is the idea behind segment tracing.<a id="footnote-03-ret" href="#footnote-03" title="Jump to reference."><sup>3</sup></a> Given a point on the ray \(t\) and an initial step size \(\epsilon\), segment tracing finds the inclusion function along the segment bounded by \([t, t + \epsilon]\).
         </p>
 
         <p>
@@ -328,8 +329,8 @@
             <figure>
                 <table class="table-nostyle">
                     <tr class="table-nostyle">
-                        <td class="table-nostyle"><img class="invertible" src="images/fig_inclusionLocalLinear.png" alt=""></td>
-                        <td class="table-nostyle"><img class="invertible" src="images/fig_inclusionLocalQuadratic.png" alt=""></td>
+                        <td class="table-nostyle"><img class="invertible" src="images/fig_inclusionLocalLinear.png" alt="Graph illustrating a linear inclusion function along a segment of the ray."></td>
+                        <td class="table-nostyle"><img class="invertible" src="images/fig_inclusionLocalQuadratic.png" alt="Graph illustrating a quadratic inclusion function along a segment of the ray."></td>
                     </tr>
                 </table>
                 <figcaption>The linear (left) and quadratic (right) inclusion functions along a segment of the ray.</figcaption>
@@ -344,21 +345,21 @@
             <figure>
                 <table class="table-nostyle">
                     <tr class="table-nostyle">
-                        <td class="table-nostyle"><img class="invertible" src="images/fig_sphereTrace.png" alt=""></td>
-                        <td class="table-nostyle"><img class="invertible" src="images/fig_segmentTraceLinear.png" alt=""></td>
-                        <td class="table-nostyle"><img class="invertible" src="images/fig_segmentTraceQuadratic.png" alt=""></td>
+                        <td class="table-nostyle"><img class="invertible" src="images/fig_sphereTrace.png" alt="Graph illustrating the number of steps taken to find the root of a function via sphere tracing."></td>
+                        <td class="table-nostyle"><img class="invertible" src="images/fig_segmentTraceLinear.png" alt="Graph illustrating the number of steps taken to find the root of a function via linear segment tracing."></td>
+                        <td class="table-nostyle"><img class="invertible" src="images/fig_segmentTraceQuadratic.png" alt="Graph illustrating the number of steps taken to find the root of a function via quadratic segment tracing."></td>
                     </tr>
                 </table>
-                <figcaption> The number of steps taken by ray marching with global Lipschitz constant (left), segment tracing with linear inclusion (middle), and segment tracing with quadratic inclusion (right) in the process of finding a root.</figcaption>
+                <figcaption> The number of steps taken by sphere tracing with global Lipschitz constant (left), segment tracing with linear inclusion (middle), and segment tracing with quadratic inclusion (right) in the process of finding a root.</figcaption>
             </figure>
         </div>
 
-        <h2 id="Derivation">
+        <h2 id="derivation">
             Derivation
         </h2>
 
         <p>
-            For segment tracing to work we need to know where the minima and maxima of the first (and potentially second) derivatives of the function lie along the ray. This can be found analytically if we choose our metaball function carefully. The function I chose is:
+            For segment tracing to work we need to know where the minima and maxima of the first (and potentially second) derivatives of the function lie along the ray. This can be found analytically if we choose our metaball function carefully. The following function permits a straightforward derivation in addition to being \(C^2\) continuous and having finite support:
         </p>
 
         <p>
@@ -371,7 +372,7 @@
 
         <p>
             <figure>
-                <img class="invertible" src="images/fig_kernelFirstDerivative.png" alt="TEMP.">
+                <img class="invertible" src="images/fig_kernelFirstDerivative.png" alt="Graph of the first derivative of the metaball function.">
                 <figcaption>First derivative of the metaball function.</figcaption>
             </figure>
         </p>
@@ -397,7 +398,7 @@
         </p>
 
         <p>
-            To simplify things moving forward let \(u = 1 - at^2 - 2bt - c\) so that our metaball function along the ray is just \(u^3\). Using the chain rule we can determine that the first derivative is:
+            Note that a linear transformation can be applied to \(r_o\) and \(r_d\) to account for scaling and translation of each metaball. This is subsumed by the \(a\), \(b\) and \(c\) coefficients so it does not change the following derivation. To simplify things moving forward let \(u = 1 - at^2 - 2bt - c\) so that our metaball function along the ray is just \(u^3\). Using the chain rule we can determine that the first derivative is:
         </p>
 
         <p>
@@ -413,7 +414,7 @@
         </p>
 
         <p>
-            The roots are found where either \(u = 0\) or \(-au + 4(at + b^2) = 0\). The former case occurs at the edges of metaball function, where \(|\mathbf{r}_o + t\mathbf{r}_d|^2 = 1\). Looking at the graph we know that this is not where the extrema lie, so we want to solve the latter case which reduces to the following:
+            The roots are found where either \(u = 0\) or \(-au + 4(at + b^2) = 0\), where the former case occurs at the edges of metaball function. Looking at the graph we know that this is not where the extrema lie, so we want to solve the latter case which reduces to the following:
         </p>
 
         <p>
@@ -460,7 +461,7 @@
 
         <p>
             <figure>
-                <img class="invertible" src="images/fig_kernelSecondDerivative.png" alt="TEMP.">
+                <img class="invertible" src="images/fig_kernelSecondDerivative.png" alt="Graph of the second derivative of the metaball function.">
                 <figcaption>Second derivative of the metaball function.</figcaption>
             </figure>
         </p>
@@ -501,7 +502,7 @@
             $$
         </p>
 
-        <h2 id="Implementation">
+        <h2 id="implementation">
             Implementation
         </h2>
 
@@ -511,13 +512,13 @@
 
         <p>
             <figure>
-                <img class="invertible" src="images/fig_frustumTile.png" alt="">
+                <img class="invertible" src="images/fig_frustumTile.png" alt="Diagram showing metaballs inside the view frustum, with another smaller frustum enclosing the bounding spheres of these metaballs.">
                 <figcaption>The bounding spheres of each metaball (dashed circles) determine the area of interest within the oblique frustum projected by a tile.</figcaption>
             </figure>
         </p>
 
         <p>
-            Using an atomic counter, each thread tests one metaball at a time such that \(16 \times 16 = 256\) metaballs can be tested in parallel. Metaballs that intersect the tile are stored in a group shared array, and we keep track of the minimum and maximum depths of all metaballs to give us an approximate bounds in which to segment trace. Without compression metaballs can be represented by a position, radius, and colour, totalling \(32\) bytes in size, meaning we can fit \(512\) metaballs in group shared memory for a reasonable cost of \(16\)kb.
+            Using an atomic counter, each thread tests one metaball at a time such that \(16 \times 16 = 256\) metaballs can be tested in parallel. Metaballs that intersect the tile are stored in a group shared array, and we keep track of the minimum and maximum depths of all metaballs to give us an approximate bounds in which to segment trace. Without compression metaballs can be represented by a position, radius, and colour, totalling \(32\) bytes in size, meaning we can fit \(512\) metaballs per tile in shared memory for a reasonable cost of \(16\)kb.
         </p>
 
         <pre>
@@ -547,7 +548,7 @@ groupshared Metaball groupMetaballs[512];
 
         <p>
             <figure>
-                <img class="invertible" src="images/fig_frustumOcclusion.png" alt="">
+                <img class="invertible" src="images/fig_frustumOcclusion.png" alt="Diagram showing metaballs inside the view frustum, where the two front-most metaballs are occluding a further metaball.">
                 <figcaption>The minimum bounding spheres of the two front-most metaballs completely occlude the metaball in the shaded region.</figcaption>
             </figure>
         </p>
@@ -558,17 +559,17 @@ groupshared Metaball groupMetaballs[512];
 
         <p>
             <figure>
-                <img src="images/fig_screenSpaceMetaballs.png" alt="">
-                <figcaption>A particle system rendered as an isosurface consisting of approximately 2048 coloured metaballs.</figcaption>
+                <img src="images/fig_screenSpaceMetaballs.png" alt="Render showing a number of coloured metaballs.">
+                <figcaption>A particle system rendered as an isosurface consisting of \(2048\) coloured metaballs.</figcaption>
             </figure>
         </p>
 
-        <h2 id="Results">
+        <h2 id="results">
             Results
         </h2>
 
         <p>
-            Below is a table showing the average time taken to render a given number of metaballs on an Apple M1 Max. The maximum number of ray steps was capped to \(256\) for all benchmarks, although only naive sphere tracing ever hit this limit.
+            Below is a table showing the average time taken to render a given number of metaballs on an Apple M1 Max. The maximum number of ray steps was capped to \(256\) for all benchmarks, although only sphere tracing ever hit this limit.
         </p>
 
         <div class="container-scroll">
@@ -644,32 +645,32 @@ groupshared Metaball groupMetaballs[512];
                 </tr>
                 <tr>
                     <td>
-                        <img src="images/fig_raySteps_linear.png" alt="">
+                        <img src="images/fig_raySteps_linear.png" alt="Image showing the number of steps taken to reach the isosurface via linear segment tracing.">
                     </td>
                     <td>
-                        <img src="images/fig_raySteps_quadraticStandard.png" alt="">
+                        <img src="images/fig_raySteps_quadraticStandard.png" alt="Image showing the number of steps taken to reach the isosurface via quadratic segment tracing.">
                     </td>
                     <td>
-                        <img src="images/fig_raySteps_quadraticImproved.png" alt="">
+                        <img src="images/fig_raySteps_quadraticImproved.png" alt="Image showing the number of steps taken to reach the isosurface via improved quadratic segment tracing.">
                     </td>
                 </tr>
                 <tr>
                     <td colspan=3>
-                        <img src="images/fig_raySteps_key.png" alt="">
+                        <img src="images/fig_raySteps_key.png" alt="A key showing the mapping between the number of ray steps to a gradient.">
                     </td>
                 </tr>
             </table>
         </div>
 
         <p>
-            We can see that in some cases standard quadratic segment tracing actually requires more steps to reach the isosurface. Also, even though the improved quadratic method generally takes fewer steps than linear segment tracing, the latter still wins out in terms of performance. This is likely because the relatively small reduction in step count fails to compensate for the added effort demanded by the more complex algorithm.
+            We can see that in some cases standard quadratic segment tracing actually requires more steps to reach the isosurface. Also, even though the improved quadratic method generally takes fewer steps than linear segment tracing, the latter still wins out in terms of performance. This is likely because the relatively small reduction in step count fails to compensate for the added computational complexity of each step.
         </p>
 
         <p>
-            Ultimately I think this stands as a neat curiosity with maybe some practical applications for very niche use-cases. Given that good performance is dependent on having a relatively low number of metaballs, I wouldn't expect this to be very useful for things like dense fluid or particle simulations.
+            Ultimately I think this stands as a neat curiosity with maybe some practical applications for very niche use-cases. Given that decent performance is dependent on having a relatively low number of metaballs, I wouldn't expect this to be very useful for things like rendering complex fluid simulations.
         </p>
 
-        <h2 id="Further Work">
+        <h2 id="further-work">
             Further Work
         </h2>
 
@@ -677,17 +678,21 @@ groupshared Metaball groupMetaballs[512];
             One thing I didn't explore was simplification through level-of-detail adjustments. Perhaps after a certain distance close groups of metaballs could be approximated by a single, larger metaball. Another idea is to revert to a simplified two-dimensional renderer for small or distant groups of metaballs, which would just entail 'splatting' metaball contributions instead of a full ray trace.
         </p>
 
-        <h2 id="References">
+        <h2 id="references">
             References
         </h2>
 
-        <p>
-            Galin, E., Guérin, E., Paris, A. and Peytavie, A. (2020), Segment Tracing Using Local Lipschitz Bounds. Computer Graphics Forum, 39: 545-554. https://doi.org/10.1111/cgf.13951
-        </p>
-
-        <p>
-
-        </p>
+        <ul style="list-style: none;">
+            <li id="footnote-01">
+                Melike Aydinlilar and Cédric Zanni. "Forward inclusion functions for ray-tracing implicit surfaces" (2023).<a href="#footnote-01-ret" title="Return to text."><sup>⮐</sup></a>
+            </li>
+            <li id="footnote-02">
+                Mathéo Moinet and Fabrice Neyret. "Fast sphere tracing of procedural volumetric noise for very large and detailed scenes" (2025).<a href="#footnote-02-ret" title="Return to text."><sup>⮐</sup></a>
+            </li>
+            <li id="footnote-03">
+                Eric Galin, Eric Guérin, Axel Paris, and Adrien Peytavie. "Segment Tracing Using Local Lipschitz Bounds" (2020).<a href="#footnote-03-ret" title="Return to text."><sup>⮐</sup></a>
+            </li>
+        </ul>
 
     </body>
 </html>
