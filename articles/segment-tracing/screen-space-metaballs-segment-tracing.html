@@ -20,8 +20,7 @@
                 <div class="menu-left">
                     <table class="table-nostyle"><tr class="table-nostyle">
                         <td class="menu-table-pages-entry"><a href="../../index.html">Articles</a></td>
-                        <td class="menu-table-pages-entry"><a href="../../index.html">About</a></td>
-                        <td class="menu-table-pages-entry"><a href="../../index.html">Contact</a></td>
+                        <td class="menu-table-pages-entry"><a href="../../contact.html">Contact</a></td>
                     </tr></table>
                 </div>
 
@@ -54,6 +53,10 @@
         <hr>
         </header>
 
+        <p>
+            <i>14<sup>th</sup> September 2026</i>
+        </p>
+
         <h1>
             Rendering Screen Space Metaballs with Segment Tracing
         </h1>
@@ -78,9 +81,9 @@
         <h2 id="introduction">
             Introduction
         </h2>
-
+        
         <p>
-            There's something very satisfying to me about <a href="https://en.wikipedia.org/wiki/Metaballs">metaballs</a>. Watching blobs merge and seperate as they float through space like the digital equivalent of a lava lamp can be hypnotic. In this post I'd like to cover a technique I've been exploring for rendering pixel-perfect metaballs in real-time. Let's start with some prerequisites...
+            There's something very alluring about <a href="https://en.wikipedia.org/wiki/Metaballs">metaballs</a>. Watching them undulate as they merge and seperate is a bit like staring at a digital lava lamp. They're also pretty handy for modelling things like organic forms or fluid simulations. In this post I'd like to cover a technique I've been playing around with for rendering pixel-perfect metaballs in real-time. I'll start with some prerequisites...
         </p>
 
         <h2 id="implicit-surfaces">
@@ -682,17 +685,15 @@ groupshared Metaball groupMetaballs[512];
             References
         </h2>
 
-        <ul style="list-style: none;">
-            <li id="footnote-01">
-                Melike Aydinlilar and Cédric Zanni. "Forward inclusion functions for ray-tracing implicit surfaces" (2023).<a href="#footnote-01-ret" title="Return to text."><sup>⮐</sup></a>
-            </li>
-            <li id="footnote-02">
-                Mathéo Moinet and Fabrice Neyret. "Fast sphere tracing of procedural volumetric noise for very large and detailed scenes" (2025).<a href="#footnote-02-ret" title="Return to text."><sup>⮐</sup></a>
-            </li>
-            <li id="footnote-03">
-                Eric Galin, Eric Guérin, Axel Paris, and Adrien Peytavie. "Segment Tracing Using Local Lipschitz Bounds" (2020).<a href="#footnote-03-ret" title="Return to text."><sup>⮐</sup></a>
-            </li>
-        </ul>
+        <p id="footnote-01">
+            Melike Aydinlilar and Cédric Zanni. "Forward inclusion functions for ray-tracing implicit surfaces" (2023).<a href="#footnote-01-ret" title="Return to text."><sup>↩</sup></a>
+        </p>
+        <p id="footnote-02">
+            Mathéo Moinet and Fabrice Neyret. "Fast sphere tracing of procedural volumetric noise for very large and detailed scenes" (2025).<a href="#footnote-02-ret" title="Return to text."><sup>↩</sup></a>
+        </p>
+        <p id="footnote-03">
+            Eric Galin, Eric Guérin, Axel Paris, and Adrien Peytavie. "Segment Tracing Using Local Lipschitz Bounds" (2020).<a href="#footnote-03-ret" title="Return to text."><sup>↩</sup></a>
+        </p>
 
     </body>
 </html>
