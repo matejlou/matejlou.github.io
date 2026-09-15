@@ -99,11 +99,11 @@
         </p>
 
         <p>
-            Metaballs are a type of implicit surface. Each distinct metaball at a position \(\mathbf{p}_n\) is defined by an implicit function \(F(\mathbf{p}_n)\). By summing up all of these functions and taking the set of points that equals 0 we produce the smooth, blobby surface that is characteristic of metaballs. Often we include a bias parameter \(T\) that gives us some control over the extent of the surface:
+            Metaballs are a type of implicit surface. Each distinct metaball with its centre at \(\mathbf{c}_n\) and effective radius \(r_n\) is fed through an implicit function. By summing up the output of all of these functions and taking the set of points that equals 0 we produce the smooth, blobby surface that is characteristic of metaballs. Often we include a bias parameter \(T\) that gives us some control over the extent of the surface:
         </p>
 
         <p>
-            $$ F(\mathbf{p}) = \sum_{n} F(\mathbf{p}_n) - T = 0 $$
+            $$ F(\mathbf{p}) = \sum_{n} F(\dfrac{\mathbf{p} - \mathbf{c}_n}{r_n}) - T = 0 $$
         </p>
 
         <p>
@@ -572,7 +572,7 @@ groupshared Metaball groupMetaballs[512];
         </h2>
 
         <p>
-            Below is a table showing the average time taken to render a given number of metaballs on an Apple M1 Max. The maximum number of ray steps was capped to \(256\) for all benchmarks, although only sphere tracing ever hit this limit.
+            Below is a table showing the average time taken to render a given number of metaballs on an Apple M1 Max. The maximum number of ray steps was capped to \(256\) for all benchmarks, although only sphere tracing ever hit this limit. The bias parameter \(T\) was set to \(0.7\).
         </p>
 
         <div class="container-scroll">
@@ -686,13 +686,13 @@ groupshared Metaball groupMetaballs[512];
         </h2>
 
         <p id="footnote-01">
-            Melike Aydinlilar and Cédric Zanni. "Forward inclusion functions for ray-tracing implicit surfaces" (2023).<a href="#footnote-01-ret" title="Return to text."><sup>↩</sup></a>
+            Melike Aydinlilar and Cédric Zanni. "Forward inclusion functions for ray-tracing implicit surfaces" (2023).<a href="#footnote-01-ret" title="Return to text.">↩</a>
         </p>
         <p id="footnote-02">
-            Mathéo Moinet and Fabrice Neyret. "Fast sphere tracing of procedural volumetric noise for very large and detailed scenes" (2025).<a href="#footnote-02-ret" title="Return to text."><sup>↩</sup></a>
+            Mathéo Moinet and Fabrice Neyret. "Fast sphere tracing of procedural volumetric noise for very large and detailed scenes" (2025).<a href="#footnote-02-ret" title="Return to text.">↩</a>
         </p>
         <p id="footnote-03">
-            Eric Galin, Eric Guérin, Axel Paris, and Adrien Peytavie. "Segment Tracing Using Local Lipschitz Bounds" (2020).<a href="#footnote-03-ret" title="Return to text."><sup>↩</sup></a>
+            Eric Galin, Eric Guérin, Axel Paris, and Adrien Peytavie. "Segment Tracing Using Local Lipschitz Bounds" (2020).<a href="#footnote-03-ret" title="Return to text.">↩</a>
         </p>
 
     </body>
