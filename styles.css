@@ -114,6 +114,14 @@ tr:nth-child(odd) {
     fill: var(--colour-link-active);
 }
 
+.post-title {
+    margin-top: 4px;
+}
+
+.post-meta {
+    font-size: 16px;
+}
+
 .references {
     list-style-type: none;
 }
