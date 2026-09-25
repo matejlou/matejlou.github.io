@@ -90,7 +90,10 @@
         </p>
 
         <p>
-            <img class="invertible" src="images/fig_areaLightHemisphere.png" alt="TODO.">
+            <figure>
+                <img class="invertible" src="images/fig_areaLightHemisphere.png" alt="TODO.">
+                <figcaption>The length of the solid angle \(\Omega\) determines how much light from \(L\) reaches the point at \(\mathbf{p}\).</figcaption>
+            </figure>    
         </p>
 
         <p>
@@ -114,7 +117,10 @@
         </p>
 
         <p>
-            <img class="invertible" src="images/fig_softShadowHemisphere.png" alt="TODO.">
+            <figure>
+                <img class="invertible" src="images/fig_softShadowHemisphere.png" alt="TODO.">
+                <figcaption>An occluder reduces the solid angle projected by \(L\). The dotted line shows how the amount of incoming light \(E\) changes as \(\mathbf{p}\) moves horizontally across the surface.</figcaption>
+            </figure>    
         </p>
 
         <p>
@@ -138,7 +144,10 @@
         </p>
 
         <p>
-            FIGURE.
+            <figure>
+                <img class="invertible" src="images/fig_pointLightVisibility.png" alt="TODO.">
+                <figcaption>The point \(\mathbf{p}\) is in shadow if it has no direct line of sight to the point \(\mathbf{L}\).</figcaption>
+            </figure>    
         </p>
 
         <p>
@@ -190,7 +199,7 @@
         </p>
 
         <p>
-            This means we can effectively ray trace a path to the light source from \(\mathbf{p}\) by checking for an intersection between the projected square and the ray. One way to do this is to <a href="https://en.wikipedia.org/wiki/Ray_marching">ray march</a> until we reach the light or find an intersection.
+            This means we can effectively ray trace a path to the light source from \(\mathbf{p}\) by checking for an intersection between the projected square and the ray. To do this, we project the ray onto the light's viewing plane to determine the footprint of the ray in light space.
         </p>
 
         <p>
